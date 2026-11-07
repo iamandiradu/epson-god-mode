@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "epson-god-mode"
+version = "0.1.0"
+description = "Open-source Epson waste ink pad resetter, maintenance and adjustment tool (Windows, macOS, Linux)"
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+requires-python = ">=3.10"
+dependencies = [
+  "epson-usb>=0.1.2",
+  "PySide6>=6.6",
+  "pywin32>=306; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+patterns = ["epson-escp2>=1.0.4"]
+macos = ["libusb-package>=1.0.26"]
+dev = ["pytest>=8", "pyinstaller>=6.6", "tomli; python_version < '3.11'"]
+
+[project.scripts]
+egm = "egm.cli:main"
+
+[project.gui-scripts]
+egm-gui = "egm.gui.app:run"
+
+[tool.setuptools.packages.find]
+include = ["egm*"]
+
+[tool.setuptools.package-data]
+egm = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

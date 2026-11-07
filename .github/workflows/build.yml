@@ -1,0 +1,92 @@
+name: build
+# Builds Windows (single-file .exe) and macOS (arm64 + x86_64 .dmg) on every push.
+# Signing is optional and switches on when the matching secrets exist:
+#   macOS : MACOS_CERT_P12_BASE64, MACOS_CERT_PASSWORD, MACOS_SIGN_IDENTITY,
+#           APPLE_ID, APPLE_TEAM_ID, APPLE_APP_PASSWORD           (Apple Developer Program)
+#   Windows (SignPath Foundation, free for OSS): SIGNPATH_API_TOKEN secret +
+#           repository variables SIGNPATH_ORGANIZATION_ID, SIGNPATH_PROJECT_SLUG, SIGNPATH_POLICY_SLUG
+on:
+  push: { branches: [main], tags: ["v*"] }
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e ".[patterns,dev]"
+      - run: QT_QPA_PLATFORM=offscreen pytest -q
+
+  windows:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e ".[patterns]" pyinstaller pywin32
+      - run: pyinstaller --noconfirm --clean packaging/egm.spec
+      - run: dist\egm.exe -d sim:L3111 waste
+      - name: Package
+        run: Compress-Archive -Path dist\EpsonGodMode.exe, dist\egm.exe, README.md, LICENSE -DestinationPath EpsonGodMode-windows.zip
+      - id: unsigned
+        uses: actions/upload-artifact@v4
+        with: { name: EpsonGodMode-windows, path: EpsonGodMode-windows.zip }
+      - name: Sign with SignPath
+        if: ${{ vars.SIGNPATH_ORGANIZATION_ID != '' }}
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed
+      - if: ${{ vars.SIGNPATH_ORGANIZATION_ID != '' }}
+        uses: actions/upload-artifact@v4
+        with: { name: EpsonGodMode-windows-signed, path: signed }
+
+  macos:
+    needs: test
+    strategy:
+      matrix:
+        os: [macos-15, macos-15-intel]   # arm64 (Apple Silicon), x86_64 (Intel); macos-13 is retired
+    runs-on: ${{ matrix.os }}
+    env:
+      HAS_CERT: ${{ secrets.MACOS_CERT_P12_BASE64 != '' }}
+      HAS_NOTARY: ${{ secrets.APPLE_APP_PASSWORD != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Import signing certificate
+        if: ${{ env.HAS_CERT == 'true' }}
+        env:
+          P12: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+          P12_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+        run: |
+          echo "$P12" | base64 --decode > cert.p12
+          security create-keychain -p ci build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p ci build.keychain
+          security import cert.p12 -k build.keychain -P "$P12_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k ci build.keychain
+          rm cert.p12
+      - name: Notarization credentials
+        if: ${{ env.HAS_NOTARY == 'true' && env.HAS_CERT == 'true' }}
+        run: |
+          xcrun notarytool store-credentials egm-notary --apple-id "${{ secrets.APPLE_ID }}" \
+            --team-id "${{ secrets.APPLE_TEAM_ID }}" --password "${{ secrets.APPLE_APP_PASSWORD }}"
+          echo "EGM_NOTARY_PROFILE=egm-notary" >> "$GITHUB_ENV"
+      - name: Build .app and .dmg
+        env:
+          EGM_MAC_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+        run: ./packaging/build_macos.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EpsonGodMode-${{ matrix.os == 'macos-15' && 'macos-arm64' || 'macos-x86_64' }}
+          path: dist/*.dmg

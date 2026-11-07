@@ -1,0 +1,29 @@
+{
+ "_note": "Catalogue of the service adjustments found in Epson's Adjustment Program for the L3110/L3150 generation. Guidance is written for this project (not copied). 'cells' maps a family to the EEPROM addresses holding the adjustment value; an adjustment can only be written when its family has a verified entry. Use the EEPROM Diff tool to discover addresses and contribute them.",
+ "adjustments": [
+  {"id": "tof", "name": "Top margin (TOF) adjustment", "paper": "A4 matte", "kind": "pattern",
+   "guidance": "Print the pattern, find the block whose line sits closest to the target margin, enter its number and write it.", "range": [-10, 10], "cells": {}},
+  {"id": "head_angular", "name": "Head angular adjustment", "paper": "A4 plain", "kind": "pattern",
+   "guidance": "Print the pattern and pick the block with the straightest vertical lines on both sides (1→80 and 80→1 rows).", "range": [-8, 8], "cells": {}},
+  {"id": "bid", "name": "Bi-directional (Bi-D) adjustment", "paper": "A4 plain", "kind": "pattern",
+   "guidance": "Print the pattern for each dot size and choose the block where forward and reverse passes line up. If the best block is at the edge, write it and repeat so the range re-centres.", "range": [-20, 20], "cells": {}},
+  {"id": "pw_first_dot", "name": "PW / first dot position", "paper": "A4 matte", "kind": "pattern",
+   "guidance": "Choose the line that sits 5 mm from each paper edge.", "range": [-10, 10], "cells": {}},
+  {"id": "pe", "name": "PE sensor adjustment", "paper": "A4 plain", "kind": "automatic",
+   "guidance": "Load paper; the printer measures the sensor itself and stores the result.", "cells": {}},
+  {"id": "pf", "name": "PF (paper feed) adjustment", "paper": "A4 matte", "kind": "pattern",
+   "guidance": "Pick the block with no white or dark banding between passes.", "range": [-30, 30], "cells": {}},
+  {"id": "pf_band", "name": "PF band adjustment", "paper": "A4 plain", "kind": "pattern",
+   "guidance": "Pick the block with the least visible banding for black and for colour.", "range": [-30, 30], "cells": {}},
+  {"id": "paper_skew", "name": "Paper skew adjustment", "paper": "A4 plain", "kind": "pattern",
+   "guidance": "Do this after Bi-D. Enter the value with the smallest gap for each of #1–#4, write, then print the check pattern to confirm.", "range": [-10, 10], "cells": {}},
+  {"id": "pf_deterioration", "name": "PF deterioration offset reset", "kind": "reset",
+   "guidance": "Resets the paper-feed wear compensation to zero. Do this after replacing the PF roller or motor.", "cells": {}},
+  {"id": "pw_sensor_counter", "name": "PW sensor deterioration counter reset", "kind": "reset",
+   "guidance": "Resets the PW sensor wear counter after replacing the sensor.", "cells": {}},
+  {"id": "head_id", "name": "Head ID input", "kind": "value",
+   "guidance": "Enter the code printed on the replacement print head label so the printer uses the correct drive voltages.", "cells": {}},
+  {"id": "shipping", "name": "Shipping setting", "kind": "reset",
+   "guidance": "Makes the printer run a cleaning cycle on next power-on (use after transport). Set it just before switching off.", "cells": {}}
+ ]
+}

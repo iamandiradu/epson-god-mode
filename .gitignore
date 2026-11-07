@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+backups/
+source/
+signing.env.bat
+signing.env.sh
+*.pfx
+*.p12
+_to_delete/
+*.prn
+Claude outputs/
