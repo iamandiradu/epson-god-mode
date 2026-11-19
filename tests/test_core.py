@@ -451,6 +451,10 @@ def test_refused_ink_charge_falls_back_to_factory_job():
 
 def test_driver_pages_render(tmp_path):
     """Colour test and purge pages render through Qt's print system (PDF here)."""
+    try:
+        from PySide6 import QtPrintSupport, QtWidgets  # noqa: F401
+    except ImportError as exc:  # e.g. libEGL.so.1 missing on a headless machine
+        pytest.skip(f"Qt GUI libraries not available: {exc}")
     from egm import driverprint as dp
     test_pdf = tmp_path / "test.pdf"
     purge_pdf = tmp_path / "purge.pdf"
