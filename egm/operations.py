@@ -92,6 +92,16 @@ class PrinterSession:
         self.ctl = EpsonCtrl(link, model.family)
         self.backup_dir: Optional[Path] = None
         self._serial: Optional[str] = None
+        #: callback(Snapshot) for every status reading, from whichever thread
+        #: made it (the GUI queues it). None reading = port busy.
+        self.on_status: Optional[Callable] = None
+        _raw_status = self.ctl.status
+
+        def _status_hook():
+            st = _raw_status()
+            self._emit(st)
+            return st
+        self.ctl.status = _status_hook  # type: ignore[method-assign]
 
     # ------------------------------------------------------------------ #
     #  Construction
@@ -375,11 +385,22 @@ class PrinterSession:
         except (TransportError, ProtocolError):
             return None
 
+    def _emit(self, st: Optional[PrinterStatus]) -> None:
+        cb = self.on_status
+        if cb is None:
+            return
+        from .activity import snapshot_from_status
+        try:
+            cb(snapshot_from_status(st))
+        except Exception:  # a UI callback must never break a printer operation
+            log.debug("on_status callback failed", exc_info=True)
+
     def _quiet_status(self) -> Optional[PrinterStatus]:
         """Status without the long reconnect backoff: None if the port is busy."""
         link = self.link
         if getattr(link, "released", False):
             if not link.try_reopen():
+                self._emit(None)
                 return None
         try:
             return self.ctl.status()
@@ -387,7 +408,13 @@ class PrinterSession:
             close = getattr(link, "suspend", None)
             if close:
                 close()
+            self._emit(None)
             return None
+
+    def poll(self):
+        """One cheap activity reading (used by the GUI's background poller)."""
+        from .activity import snapshot_from_status
+        return snapshot_from_status(self._quiet_status())
 
     def confirm_maintenance(self, waste_before: Optional[int], timeout: float = 120.0,
                             poll: float = 2.0, sleep=None) -> tuple[bool, str]:
@@ -475,17 +502,30 @@ class PrinterSession:
         txt = r.decode("latin-1", "replace").strip("\x00\x0c\r\n").replace("@BDC PS", "").strip()
         if b":NA;" not in r:
             ok, why = self.confirm_maintenance(waste_before, timeout=confirm_timeout)
+            reply = f"printer replied {txt!r}" if txt else "no reply from the printer"
             if ok:
-                return f"{opt['name']}: done — {why} (control channel)"
-            return f"{opt['name']}: the printer accepted the command but it could not be confirmed ({why})"
+                return f"{opt['name']}: done — {why} (control channel, {reply})"
+            return (f"{opt['name']}: sent on the control channel ({reply}, code {data.hex()}) but the printer "
+                    f"did not start ({why})")
         if not fallback_target:
             raise ServiceRefused(f"{opt['name']} refused on the control channel ({txt}) and no print queue "
                                  "is selected for the driver-style cleaning", opt)
-        if opt.get("kind") == "charging":
-            raise ServiceRefused(f"{opt['name']} refused on the control channel ({txt}); there is no driver-style "
-                                 "equivalent for an ink charge", opt)
         from . import printjobs as pj
-        power = data and data[0] >= 4  # Strong -> power cleaning
+        if opt.get("kind") == "charging":
+            # same factory command as a print job, inside the factory service
+            # session (how Epson's own adjustment program sends it)
+            job = pj.service_job(self.family, 0x84, data)
+            if fallback_target.startswith("file:"):
+                return f"{opt['name']}: control channel refused ({txt}); " + pj.send(job, fallback_target)
+            res = self.print_job(job, fallback_target, job_name=f"EGM {opt['name']}")
+            ok, why = self.confirm_maintenance(waste_before, timeout=max(confirm_timeout, 600))
+            how = f"control channel refused, sent as a factory print job (code {data.hex()})"
+            if ok:
+                return f"{opt['name']}: done — {why} ({how})"
+            return (f"{opt['name']}: not confirmed — {why} ({how}; {res}). The printer ignored it: use the Epson "
+                    "driver's Ink Tube Flushing / Power Cleaning instead.")
+        levels = pj.cleaning_levels(self.family)
+        power = bool(levels) and data and data[0] == levels[-1] and len(levels) > 1  # strongest -> power cleaning
         job = pj.head_cleaning(power=bool(power))
         if fallback_target.startswith("file:"):
             return f"{opt['name']}: control channel refused ({txt}); " + pj.send(job, fallback_target)

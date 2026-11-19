@@ -49,16 +49,23 @@ class Runner(QObject):
     def busy(self) -> bool:
         return self._thread is not None
 
+    @property
+    def idle(self) -> bool:
+        """Nothing running and nothing queued."""
+        return self._thread is None and not self._queue
+
     def submit(self, fn: Callable, *args, on_done: Callable = None, on_error: Callable = None,
-               on_progress: Callable = None, **kwargs) -> None:
+               on_progress: Callable = None, quiet: bool = False, **kwargs) -> None:
+        """``quiet`` jobs (background status polls) don't toggle ``busy_changed``."""
         self._queue.append((Job(fn, *args, **kwargs), on_done or (lambda r: None),
-                            on_error or (lambda m, t: None), on_progress or (lambda i, n: None)))
+                            on_error or (lambda m, t: None), on_progress or (lambda i, n: None), quiet))
         self._pump()
 
     def _pump(self) -> None:
         if self._thread is not None or not self._queue:
             return
-        job, on_done, on_error, on_progress = self._queue.pop(0)
+        job, on_done, on_error, on_progress, quiet = self._queue.pop(0)
+        self._quiet = quiet
         thread = QThread()
         job.moveToThread(thread)
         thread.started.connect(job.run)
@@ -66,7 +73,8 @@ class Runner(QObject):
         job.finished.connect(self._on_done)
         job.failed.connect(self._on_failed)
         self._thread, self._job, self._cbs = thread, job, (on_done, on_error, on_progress)
-        self.busy_changed.emit(True)
+        if not quiet:
+            self.busy_changed.emit(True)
         thread.start()
 
     def _finish(self) -> None:
@@ -74,8 +82,17 @@ class Runner(QObject):
             self._thread.quit()
             self._thread.wait()
         self._thread, self._job, self._cbs = None, None, ()
-        self.busy_changed.emit(False)
+        if not getattr(self, "_quiet", False):
+            self.busy_changed.emit(False)
+        self._quiet = False
         self._pump()
+
+    def shutdown(self, timeout_ms: int = 5000) -> None:
+        """Drop queued jobs and wait (bounded) for the running one to end."""
+        self._queue.clear()
+        if self._thread is not None:
+            self._thread.quit()
+            self._thread.wait(timeout_ms)
 
     @Slot(int, int)
     def _on_progress(self, i: int, n: int) -> None:

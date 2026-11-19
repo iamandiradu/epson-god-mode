@@ -188,6 +188,7 @@ def _family(name: str, raw: dict) -> Family:
 class ModelDB:
     def __init__(self, data: dict, fatal_codes: dict):
         self.featured_names: list[str] = data.get("featured", [])
+        self.popular_names: list[str] = data.get("popular", self.featured_names)
         self.families: dict[str, Family] = {k: _family(k, v) for k, v in data["families"].items()}
         self.models: dict[str, Model] = {}
         for name, m in data["models"].items():
@@ -219,8 +220,12 @@ class ModelDB:
         return sorted(self.models, key=_sort_key)
 
     def featured(self) -> list[Model]:
-        out = [self.models[n] for n in self.featured_names if n in self.models]
-        return out
+        """Every EcoTank model, the popular ones first."""
+        return [self.models[n] for n in self.featured_names if n in self.models]
+
+    def popular(self) -> list[Model]:
+        """The hand-picked most common models."""
+        return [self.models[n] for n in self.popular_names if n in self.models]
 
     def search(self, text: str) -> list[Model]:
         t = _normalize(text)

@@ -114,3 +114,52 @@ def row(*widgets: QWidget, stretch_last: bool = False) -> QWidget:
     if stretch_last:
         h.addStretch(1)
     return w
+
+
+class StatusStrip(QFrame):
+    """'What is the printer doing' bar: dot + state + detail + elapsed + progress."""
+
+    COLORS = {"idle": "#2e7d32", "printing": "#1565c0", "cleaning": "#1565c0", "charging": "#1565c0",
+              "busy": "#ef6c00", "unreachable": "#ef6c00", "paused": "#ef6c00", "error": "#c62828",
+              "unknown": "#757575", "offline": "#9e9e9e", "done": "#2e7d32"}
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        from PySide6.QtWidgets import QProgressBar
+        self.setFrameShape(QFrame.StyledPanel)
+        h = QHBoxLayout(self)
+        h.setContentsMargins(8, 4, 8, 4)
+        self.dot = QLabel("●")
+        self.dot.setFixedWidth(16)
+        self.title = QLabel()
+        self.title.setStyleSheet("font-weight: 600;")
+        self.detail = QLabel()
+        self.detail.setStyleSheet("color: palette(mid);")
+        self.timeinfo = QLabel()
+        self.bar = QProgressBar()
+        self.bar.setFixedWidth(240)
+        self.bar.setTextVisible(True)
+        h.addWidget(self.dot)
+        h.addWidget(self.title)
+        h.addWidget(self.detail, 1)
+        h.addWidget(self.timeinfo)
+        h.addWidget(self.bar)
+        self.show_state("offline", "Not connected")
+
+    def show_state(self, kind: str, title: str, detail: str = "", timeinfo: str = "",
+                   progress: float | None = None, busy: bool = False, estimate: bool = False) -> None:
+        self.dot.setStyleSheet(f"color: {self.COLORS.get(kind, '#757575')}; font-size: 16px;")
+        self.title.setText(title)
+        self.detail.setText(detail)
+        self.detail.setToolTip(detail)
+        self.timeinfo.setText(timeinfo)
+        if progress is not None:
+            self.bar.setRange(0, 1000)
+            self.bar.setValue(int(progress * 1000))
+            self.bar.setFormat(("~%p%" if estimate else "%p%"))
+            self.bar.show()
+        elif busy:
+            self.bar.setRange(0, 0)  # indeterminate animation
+            self.bar.show()
+        else:
+            self.bar.hide()

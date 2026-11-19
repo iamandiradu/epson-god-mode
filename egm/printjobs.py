@@ -107,17 +107,58 @@ def esc_pipe(fam: Family, op: int, data: bytes = b"") -> bytes:
     return b"\x1b|\x00" + struct.pack("<H", len(payload)) + payload
 
 
+# Every factory job recorded from Epson's adjustment program (F2_discharge.prn)
+# opens and closes a service session around its commands:
+#   FB 00 | 81 | 85 00 | 81 | <commands...> | 81 | 85 01
+# A bare ``84 <code>`` without it is silently ignored (field report, L310:
+# "sent 15 bytes", printer did nothing).
+SESSION_OPEN = ((0xFB, b"\x00"), (0x81, b""), (0x85, b"\x00"), (0x81, b""))
+SESSION_CLOSE = ((0x81, b""), (0x85, b"\x01"))
+
+
+def factory_session(fam: Family, steps) -> bytes:
+    """``steps`` = [(opcode, data), ...] wrapped in the factory service session."""
+    seq = list(SESSION_OPEN) + list(steps) + list(SESSION_CLOSE)
+    return b"".join(esc_pipe(fam, op, bytes(d)) for op, d in seq)
+
+
 def service_job(fam: Family, op: int, data: bytes = b"") -> bytes:
-    return INIT + esc_pipe(fam, op, data) + INIT
+    """One factory command as a print job, inside the service session."""
+    return factory_session(fam, [(op, data)])
 
 
-def service_cleaning_job(fam: Family, level: int) -> bytes:
-    """Service-level cleaning (1 gentle .. 4 strong) as a print job."""
+def cleaning_levels(fam: Family) -> list[int]:
+    """This family's service cleaning codes, weakest first (they differ per
+    generation: 1..4 on the L3110 family, 0..2 on the L310)."""
+    return sorted(c["data"][0] for c in fam.cleaning
+                  if c.get("kind") == "cleaning" and c.get("type") == "service" and c.get("data"))
+
+
+def charge_code(fam: Family) -> Optional[int]:
+    """This family's ink charge code (0xFF on the L3110 family, 0x0A on the L310...)."""
+    for c in fam.cleaning:
+        if c.get("kind") == "charging" and c.get("data"):
+            return c["data"][0]
+    return None
+
+
+def service_cleaning_job(fam: Family, level: Optional[int] = None) -> bytes:
+    """Service cleaning as a print job; default = this family's strongest level."""
+    levels = cleaning_levels(fam)
+    if level is None:
+        if not levels:
+            raise ValueError(f"no service cleaning codes known for family {fam.name}")
+        level = levels[-1]
+    elif levels and level not in levels:
+        raise ValueError(f"cleaning level {level} is not valid for family {fam.name} (valid: {levels})")
     return service_job(fam, 0x84, bytes([level]))
 
 
 def ink_charge_job(fam: Family) -> bytes:
-    return service_job(fam, 0x84, b"\xff")
+    code = charge_code(fam)
+    if code is None:
+        raise ValueError(f"no ink charge code known for family {fam.name}")
+    return service_job(fam, 0x84, bytes([code]))
 
 
 def service_jobs() -> dict:

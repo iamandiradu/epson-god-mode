@@ -23,7 +23,8 @@ from .. import printjobs as pj
 from ..modeldb import COVERAGE_LABELS, load as load_db
 from ..operations import PrinterSession
 from ..transport import discover_all
-from .widgets import Badge, ConfirmDialog, LevelBar, hline
+from ..activity import ActivityTracker, fmt_duration
+from .widgets import Badge, ConfirmDialog, LevelBar, StatusStrip, hline
 from .workers import Runner
 
 DISCLAIMER = (
@@ -414,8 +415,10 @@ class MaintenancePage(Page):
         rq.clicked.connect(self.refresh_queues)
         f.addRow("Send via:", self._row(self.queue, rq))
         for label, key in [("Nozzle check pattern", "nozzle"), ("Head cleaning (driver-style)", "clean"),
-                           ("Power cleaning", "power"), ("Colour test page", "color"),
-                           ("Service cleaning (strong, as print job)", "svc_clean"),
+                           ("Power cleaning", "power"),
+                           ("Colour test page (through the Epson driver)", "color"),
+                           ("Purge one colour… (solid pages, no waste ink)", "purge"),
+                           ("Service cleaning (strongest level, as print job)", "svc_clean"),
                            ("Initial ink charge (uses a lot of ink!)", "charge"),
                            ("Ink discharge (F2 sequence — L3110/L3150 generation)", "discharge"),
                            ("Release stuck job (printer paused mid-print / whining)", "release")]:
@@ -425,7 +428,7 @@ class MaintenancePage(Page):
         save = QPushButton("Save selected job as .prn instead…")
         save.clicked.connect(self.save_job)
         self.save_kind = QComboBox()
-        self.save_kind.addItems(["nozzle", "clean", "power", "color", "svc_clean", "charge", "discharge"])
+        self.save_kind.addItems(["nozzle", "clean", "power", "svc_clean", "charge", "discharge"])
         f.addRow(self._row(self.save_kind, save))
         lay.addWidget(jobs)
 
@@ -494,8 +497,37 @@ class MaintenancePage(Page):
         if "Charg" in name and QMessageBox.warning(self, "Ink charge", "An ink charge pumps a lot of ink into the waste pads. Continue?",
                                                    QMessageBox.Yes | QMessageBox.No) != QMessageBox.Yes:
             return
+        if not self._confirm_if_busy(name):
+            return
         target = self.queue.currentData() or self.queue.currentText().strip() or "direct"
-        self.run(s.run_cleaning, i, target, done=lambda r: self.win.log(r), label=name)
+        opt = s.cleaning_options()[i] if 0 <= i < len(s.cleaning_options()) else {}
+        level = (opt.get("data") or [0])[0]
+        kind = "ink_charge" if opt.get("kind") == "charging" else ("power_cleaning" if level >= 4 else "head_cleaning")
+        self.win.start_operation(name, kind)
+
+        def done(r):
+            self.win.log(r)
+            if ": done" not in r:
+                self.win.finish_operation("not confirmed")
+            elif not (self.win.activity.last and self.win.activity.last.working):
+                self.win.finish_operation("done")
+            # else: still working (e.g. a long ink charge) -- the status poller
+            # finishes the operation when the printer reports ready
+
+        def failed(msg, tb):
+            self.win.finish_operation("failed")
+            self.win.log(f"ERROR ({name}): {msg}")
+            QMessageBox.critical(self, name, msg)
+        self.win.busy_label.setText(name + "…")
+        self.win.runner.submit(s.run_cleaning, i, target, on_done=done, on_error=failed)
+
+    def _confirm_if_busy(self, what: str) -> bool:
+        if not self.win.printer_working():
+            return True
+        return QMessageBox.question(
+            self, "Printer is busy",
+            f"The printer still looks busy ({self.win.strip.title.text()}).\n\n"
+            f"Start “{what}” anyway? Running maintenance back to back wastes ink.") == QMessageBox.Yes
 
     def _job(self, key: str) -> Optional[bytes]:
         s = self.session
@@ -513,10 +545,14 @@ class MaintenancePage(Page):
         if fam is None:
             QMessageBox.warning(self, "Not connected", "Connect (or select a model) first: factory jobs use the model's key.")
             return None
-        if key == "svc_clean":
-            return pj.service_cleaning_job(fam, 4)
-        if key == "charge":
-            return pj.ink_charge_job(fam)
+        try:
+            if key == "svc_clean":
+                return pj.service_cleaning_job(fam)
+            if key == "charge":
+                return pj.ink_charge_job(fam)
+        except ValueError as exc:
+            QMessageBox.warning(self, "Not available for this model", str(exc))
+            return None
         if key == "discharge":
             jd = pj.service_jobs()["ink_discharge_f2"]
             if fam.name not in jd["families"]:
@@ -529,7 +565,86 @@ class MaintenancePage(Page):
             return pj.scripted_job(fam, "ink_discharge_f2")
         return None
 
+    def _driver_target(self) -> Optional[str]:
+        """Installed print queue for driver-rendered pages (colour test, purge)."""
+        from .. import driverprint as dp
+        sel = self.queue.currentData()
+        if sel and sel != "direct":
+            return sel
+        s = self.session
+        model = (s.model.model_string or s.model.name) if s else self.win.pages["Printer"].model.currentText()
+        q = dp.pick_driver_queue(model)
+        if q:
+            return q
+        queues = dp.driver_queues()
+        if not queues:
+            QMessageBox.warning(self, "No printer driver",
+                                "These pages are printed through the Epson printer driver, and no print queue is "
+                                "installed. Install the Epson driver for your printer, then try again.")
+            return None
+        from PySide6.QtWidgets import QInputDialog
+        q, ok = QInputDialog.getItem(self, "Choose the printer", "Print through which installed printer?", queues, 0, False)
+        return q if ok else None
+
+    def driver_page(self, key: str) -> None:
+        from .. import driverprint as dp
+        target = self._driver_target()
+        if not target:
+            return
+        if key == "purge":
+            from PySide6.QtWidgets import QInputDialog
+            color, ok = QInputDialog.getItem(self, "Purge one colour",
+                                             "Which colour is weak? Solid pages of it use only that ink and nothing "
+                                             "goes to the waste pads.", list(dp.PURGE_COLORS), 0, False)
+            if not ok:
+                return
+            pages, ok = QInputDialog.getInt(self, "Purge one colour", "Number of pages (2–3 is usually enough):", 2, 1, 5)
+            if not ok:
+                return
+            name, kind = f"Purge {color.lower()}", "print"
+        else:
+            name, kind = "Colour test page", "print"
+        if not self._confirm_if_busy(name):
+            return
+        s = self.session
+        if s and hasattr(s.link, "suspend"):
+            s.link.suspend()  # the spooler needs the USB port; the app reconnects by itself
+        try:
+            if key == "purge":
+                res = dp.print_purge(target, color, pages)
+            else:
+                res = dp.print_color_test(target, s.model.name if s else "")
+        except Exception as exc:  # noqa: BLE001
+            QMessageBox.critical(self, name, str(exc))
+            return
+        self.win.log(res)
+        if s:
+            self.win.start_operation(name, kind)
+
+    def _service_option(self, key: str) -> int:
+        """Index of the matching cleaning option (charge, or strongest service cleaning)."""
+        opts = self.session.cleaning_options() if self.session else []
+        if key == "charge":
+            idx = [i for i, o in enumerate(opts) if o.get("kind") == "charging"]
+        else:
+            idx = [i for i, o in enumerate(opts) if o.get("kind") == "cleaning" and o.get("type") == "service"]
+            idx.sort(key=lambda i: (opts[i].get("data") or [0])[0])
+        return idx[-1] if key != "charge" and idx else (idx[0] if idx else -1)
+
     def print_job(self, key: str) -> None:
+        if key in ("color", "purge"):
+            self.driver_page(key)
+            return
+        if key in ("charge", "svc_clean") and self.session is not None:
+            # control channel first (the way the printer accepts it most often),
+            # then the factory print job, with the result confirmed either way
+            i = self._service_option(key)
+            if i < 0:
+                QMessageBox.warning(self, "Not available for this model", "No factory code is known for this model.")
+                return
+            self.clean_combo.setCurrentIndex(i)
+            self.run_clean()
+            return
         job = self._job(key)
         if job is None:
             return
@@ -541,6 +656,14 @@ class MaintenancePage(Page):
                 return
             self.run(pj.send, job, target, done=lambda r: self.win.log(r), label="Sending job")
             return
+        names = {"nozzle": ("Nozzle check", "nozzle_check"), "clean": ("Head cleaning", "head_cleaning"),
+                 "power": ("Power cleaning", "power_cleaning"), "color": ("Colour test page", "print"),
+                 "svc_clean": ("Service cleaning", "head_cleaning"), "charge": ("Ink charge", "ink_charge"),
+                 "discharge": ("Ink discharge", "ink_discharge")}
+        if key in names and not target.startswith("file:"):
+            if not self._confirm_if_busy(names[key][0]):
+                return
+            self.win.start_operation(*names[key])
         self.run(s.print_job, job, target, done=lambda r: self.win.log(r), label="Sending job")
 
     def save_job(self) -> None:
@@ -900,6 +1023,146 @@ class AdjustPage(Page):
 # --------------------------------------------------------------------------- #
 #  Models browser
 # --------------------------------------------------------------------------- #
+class TroubleshootPage(Page):
+    title = "Troubleshooting"
+
+    def __init__(self, win):
+        super().__init__(win)
+        from .. import troubleshooting as ts
+        self.kb = ts.load()
+        lay = QVBoxLayout(self)
+        top = QHBoxLayout()
+        self.series = QComboBox()
+        self.series.addItem("Connected / selected printer", "")
+        for key, name in self.kb.series_choices():
+            self.series.addItem(name, key)
+        self.series.currentIndexChanged.connect(self.refresh)
+        self.search = QLineEdit()
+        self.search.setPlaceholderText("Describe the problem: yellow missing, two lights flashing, E-11, paper jam…")
+        self.search.textChanged.connect(self.refresh)
+        top.addWidget(QLabel("Printer:"))
+        top.addWidget(self.series, 1)
+        top.addWidget(self.search, 2)
+        lay.addLayout(top)
+        split = QSplitter(Qt.Horizontal)
+        self.list = QListWidget()
+        self.list.setWordWrap(True)
+        self.list.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.list.currentItemChanged.connect(self.show_item)
+        self.view = QTextBrowser()
+        self.view.setOpenExternalLinks(True)
+        split.addWidget(self.list)
+        split.addWidget(self.view)
+        split.setSizes([330, 670])
+        lay.addWidget(split, 1)
+        self.actions = QHBoxLayout()
+        lay.addLayout(self.actions)
+        self.refresh()
+
+    # -- data -----------------------------------------------------------------
+    def _model_name(self) -> Optional[str]:
+        if self.session:
+            return self.session.model.name
+        return self.win.pages["Printer"].model.currentText().strip() or None
+
+    def profile(self):
+        key = self.series.currentData()
+        if key:
+            return self.kb.profile_for_series(key), None
+        model = self._model_name()
+        return self.kb.profile(model), model
+
+    def on_session_changed(self) -> None:
+        self.series.setCurrentIndex(0)
+        self.refresh()
+
+    def refresh(self) -> None:
+        p, model = self.profile()
+        q = self.search.text().strip()
+        self.list.blockSignals(True)
+        self.list.clear()
+        head = QListWidgetItem(f"★ Your printer: {p.name if p.exact else (model or 'generic')}")
+        head.setData(Qt.UserRole, ("profile", None))
+        self.list.addItem(head)
+        hits = self.kb.light_matches(p, q) if q else []
+        if hits:
+            it = QListWidgetItem(f"   ↳ {len(hits)} matching light/code entr{'y' if len(hits) == 1 else 'ies'}")
+            it.setData(Qt.UserRole, ("profile", None))
+            self.list.addItem(it)
+        guides = self.kb.search(q) if q else self.kb.guides
+        cats = [] if q else self.kb.categories()
+        if q:
+            for g in guides:
+                it = QListWidgetItem(g["title"])
+                it.setData(Qt.UserRole, ("guide", g["id"]))
+                self.list.addItem(it)
+        else:
+            for c in cats:
+                sep = QListWidgetItem(c.upper())
+                sep.setFlags(Qt.NoItemFlags)
+                self.list.addItem(sep)
+                for g in guides:
+                    if g["category"] == c:
+                        it = QListWidgetItem("   " + g["title"])
+                        it.setData(Qt.UserRole, ("guide", g["id"]))
+                        self.list.addItem(it)
+        self.list.blockSignals(False)
+        self.list.setCurrentRow(2 if q and not hits and self.list.count() > 1 else 0)
+        self.show_item(self.list.currentItem())
+
+    def show_item(self, item, _prev=None) -> None:
+        from .. import troubleshooting as ts
+        while self.actions.count():
+            w = self.actions.takeAt(0).widget()
+            if w:
+                w.hide()  # gone at once, not only when the deferred delete runs
+                w.deleteLater()
+        if item is None or not item.data(Qt.UserRole):
+            return
+        kind, gid = item.data(Qt.UserRole)
+        p, model = self.profile()
+        if kind == "profile":
+            self.view.setHtml(ts.profile_html(p, model))
+            return
+        g = self.kb.guide(gid)
+        self.view.setHtml(ts.guide_html(g, p))
+        self.actions.addStretch(1)
+        for a in g.get("actions", []):
+            b = self._action_button(a)
+            if b:
+                self.actions.addWidget(b)
+
+    def _action_button(self, action: str):
+        labels = {"nozzle": "Print a nozzle check", "clean_normal": "Run a Normal cleaning…",
+                  "waste": "Open Waste ink pads", "release": "Release stuck job",
+                  "ink_charge": "Go to ink charge (Maintenance)"}
+        if action not in labels:
+            return None
+        b = QPushButton(labels[action])
+        mp = self.win.pages["Maintenance"]
+
+        def go():
+            if action == "waste":
+                self.win.nav.setCurrentRow(list(self.win.pages).index("Waste ink pads"))
+            elif action == "nozzle":
+                mp.print_job("nozzle")
+            elif action == "release":
+                mp.print_job("release")
+            elif action == "clean_normal":
+                idx = next((i for i in range(mp.clean_combo.count()) if "Normal" in mp.clean_combo.itemText(i)), -1)
+                if idx >= 0:
+                    mp.clean_combo.setCurrentIndex(idx)
+                    mp.run_clean()
+            elif action == "ink_charge":
+                self.win.nav.setCurrentRow(list(self.win.pages).index("Maintenance"))
+                idx = next((i for i in range(mp.clean_combo.count()) if "Charg" in mp.clean_combo.itemText(i)), -1)
+                if idx >= 0:
+                    mp.clean_combo.setCurrentIndex(idx)
+        b.clicked.connect(go)
+        b.setEnabled(action == "waste" or self.session is not None)
+        return b
+
+
 class ModelsPage(Page):
     title = "Model database"
 
@@ -952,6 +1215,15 @@ class MainWindow(QMainWindow):
         self._notice_timer = QTimer(self)
         self._notice_timer.timeout.connect(self._flush_notices)
         self._notice_timer.start(300)
+        # printer activity: snapshots arrive from the worker thread via a list
+        self.activity = ActivityTracker()
+        self._snaps: list = []
+        self._poll_timer = QTimer(self)
+        self._poll_timer.timeout.connect(self._background_poll)
+        self._poll_timer.start(3000)
+        self._strip_timer = QTimer(self)
+        self._strip_timer.timeout.connect(self._render_strip)
+        self._strip_timer.start(500)
 
         central = QWidget()
         root = QVBoxLayout(central)
@@ -975,14 +1247,16 @@ class MainWindow(QMainWindow):
         bar.addWidget(self.busy_label)
         bar.addWidget(self.progress)
         root.addLayout(bar)
-        root.addWidget(hline())
+        self.strip = StatusStrip()
+        root.addWidget(self.strip)
 
         body = QHBoxLayout()
         self.nav = QListWidget()
         self.nav.setMaximumWidth(190)
         self.stack = QStackedWidget()
         self.pages: dict[str, Page] = {}
-        for cls in (ConnectPage, StatusPage, WastePage, MaintenancePage, AdjustPage, CountersPage, EepromPage, ModelsPage):
+        for cls in (ConnectPage, StatusPage, WastePage, MaintenancePage, AdjustPage, CountersPage, EepromPage,
+                    TroubleshootPage, ModelsPage):
             p = cls(self)
             self.pages[p.title] = p
             self.nav.addItem(p.title)
@@ -1012,6 +1286,75 @@ class MainWindow(QMainWindow):
     def _flush_notices(self) -> None:
         while self._notices:
             self.log(self._notices.pop(0))
+
+    # -- printer activity ------------------------------------------------------
+    def _background_poll(self) -> None:
+        """Cheap status read every few seconds, only when nothing else is using
+        the printer link (jobs report their own readings through on_status)."""
+        s = self.session
+        if s is None or not self.runner.idle:
+            return
+        self.runner.submit(s.poll, quiet=True)
+
+    def start_operation(self, name: str, kind: str) -> None:
+        """Called by pages when they start something the printer will be busy with."""
+        self.activity.start(name, kind)
+        self._render_strip()
+
+    def finish_operation(self, result: str = "") -> None:
+        self.activity.finish(result)
+        self._render_strip()
+
+    def printer_working(self) -> bool:
+        last = self.activity.last
+        op = self.activity.op
+        return bool((last and last.working) or (op and op.finished is None))
+
+    def _render_strip(self) -> None:
+        import time
+        while self._snaps:
+            self.activity.observe(self._snaps.pop(0))
+        now = time.monotonic()
+        a, op, last = self.activity, self.activity.op, self.activity.last
+        if self.session is None:
+            self.strip.show_state("offline", "Not connected")
+            return
+        if op and op.finished is None:
+            # an operation we started: give up when the printer never reacted,
+            # or after 3x its usual time
+            from ..activity import NO_START_SECONDS
+            if not op.saw_work and op.elapsed(now) > NO_START_SECONDS:
+                a.finish("printer did not react")
+                self.log(f"{op.name}: the printer showed no activity for {NO_START_SECONDS}s and probably ignored "
+                         "the command. See Troubleshooting for the Epson-driver alternative.")
+            elif op.elapsed(now) > 3 * op.typical:
+                a.finish("timed out")
+            else:
+                state = last.label if last else "Starting"
+                if last and last.kind == "idle" and not op.saw_work:
+                    state = "Waiting for the printer to start"
+                self.strip.show_state(
+                    last.kind if last and last.kind != "idle" else "busy", f"{op.name} — {state}",
+                    last.detail if last else "",
+                    f"{fmt_duration(op.elapsed(now))} elapsed · usually ~{fmt_duration(op.typical)}",
+                    progress=op.estimate(now), estimate=True)
+                return
+        if op and op.finished is not None and now - op.finished < 15:
+            ok = op.result in ("done", "") or op.result.startswith(op.name)
+            self.strip.show_state("done" if op.result == "done" else ("idle" if ok else "busy"),
+                                  f"{op.name} — " + ("finished" if op.result == "done" else op.result or "finished"),
+                                  "", f"took {fmt_duration(op.elapsed(now))}", progress=1.0)
+            return
+        if last is None:
+            self.strip.show_state("unknown", "Checking printer…", busy=True)
+            return
+        stale = now - last.at > 20
+        detail = last.detail + ("  (last reading %s ago)" % fmt_duration(now - last.at) if stale else "")
+        if last.working:
+            self.strip.show_state(last.kind, last.label, detail,
+                                  f"for {fmt_duration(a.working_for(now))}", busy=True)
+        else:
+            self.strip.show_state(last.kind, last.label, detail)
 
     def log(self, msg: str) -> None:
         self.logbox.appendPlainText(_dt.datetime.now().strftime("%H:%M:%S  ") + str(msg))
@@ -1045,6 +1388,8 @@ class MainWindow(QMainWindow):
         self.session = s
         if hasattr(s.link, "on_event"):
             s.link.on_event = lambda msg: self._notices.append(msg)
+        self.activity = ActivityTracker()
+        s.on_status = self._snaps.append  # list.append is thread-safe; drained on the GUI thread
         self.conn_label.setText(f"{s.model.name}  ·  {s.link.describe()}")
         self.cov_badge.setText(f"coverage: {s.family.coverage}")
         self.cov_badge.set_kind(s.family.coverage)
@@ -1066,6 +1411,8 @@ class MainWindow(QMainWindow):
             self.session.close()
             self.session = None
         self.conn_label.setText("Not connected")
+        self.activity = ActivityTracker()
+        self._render_strip()
         for b in (self.cov_badge, self.ver_badge, self.dry_badge):
             b.hide()
         for p in self.pages.values():
@@ -1086,6 +1433,9 @@ class MainWindow(QMainWindow):
                           f"<p>{DISCLAIMER}</p>")
 
     def closeEvent(self, e) -> None:  # noqa: N802
+        for t in (self._poll_timer, self._strip_timer, self._notice_timer):
+            t.stop()
+        self.runner.shutdown()
         if self.session:
             self.session.close()
         super().closeEvent(e)

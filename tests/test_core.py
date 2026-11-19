@@ -8,7 +8,7 @@ from egm.modeldb import load
 from egm.operations import PrinterSession, SafetyError
 from egm.protocol import eeprom_read_frame, eeprom_write_frame, parse_status
 
-FEATURED = ["L3110", "L3111", "L3150", "L3156", "L3160", "L3250", "L3251", "L3260", "L1110", "L1210",
+FEATURED = ["L310", "L3110", "L3111", "L3150", "L3156", "L3160", "L3250", "L3251", "L3260", "L1110", "L1210",
             "L4150", "L4160", "L5190", "ET-2700", "ET-2710", "ET-2720", "ET-2750", "L3210", "L3211",
             "L3215", "L3216", "L3252", "L3256", "L1250", "L4260", "L5290", "L6190", "L805", "L1800",
             "L8050", "L18050", "L120", "L121", "L380", "L382", "ET-2800", "ET-2850", "ET-4800", "ET-4850"]
@@ -329,3 +329,133 @@ def test_direct_usb_print_writes_raw_and_reopens(monkeypatch):
     assert b"".join(written) == job and link.released
     link.request(b"st\x01\x00\x01")
     assert len(opened) == 2
+
+
+# --------------------------------------------------------------------------
+#  Activity indicator
+# --------------------------------------------------------------------------
+def test_activity_snapshots_and_operation_lifecycle():
+    from egm.activity import ActivityTracker, Snapshot, snapshot_from_status, Operation
+    from egm.protocol import PrinterStatus
+    assert snapshot_from_status(None).kind == "unreachable"
+    assert snapshot_from_status(PrinterStatus(state_code=0x07, state="Cleaning")).kind == "cleaning"
+    assert snapshot_from_status(PrinterStatus(state_code=0x04, state="Ready", error="Paper out", error_code=6)).kind == "error"
+    t = ActivityTracker()
+    op = t.start("Head cleaning", "head_cleaning")
+    t.observe(Snapshot("idle", "Ready"))          # before the printer picks it up
+    assert op.finished is None
+    t.observe(Snapshot("unreachable", "Working"))  # spooler / job holds the port
+    t.observe(Snapshot("cleaning", "Cleaning"))
+    assert op.saw_work and op.finished is None
+    t.observe(Snapshot("idle", "Ready"))
+    assert op.finished is not None and op.result == "done"
+
+
+def test_estimate_never_claims_done_early():
+    from egm.activity import Operation
+    op = Operation("Ink charge", "ink_charge")
+    assert op.estimate(op.started + 10) < 0.05
+    assert 0.9 <= op.estimate(op.started + op.typical * 5) < 1.0
+    op.finished = op.started + 1
+    assert op.estimate() == 1.0
+
+
+def test_session_reports_every_status_reading():
+    s = PrinterSession.connect("sim:L3111", "L3111")
+    seen = []
+    s.on_status = seen.append
+    s.status()
+    snap = s.poll()
+    assert [x.kind for x in seen] == ["idle", "idle"] and snap.kind == "idle"
+    s.link.printer.refuse_service = False
+    s.run_cleaning(0, confirm_timeout=8)
+    assert "cleaning" in [x.kind for x in seen]
+
+
+# --------------------------------------------------------------------------
+#  Troubleshooting knowledge base
+# --------------------------------------------------------------------------
+def test_troubleshooting_db_is_consistent():
+    from egm import troubleshooting as ts
+    kb = ts.load()
+    db = load()
+    for key, s in kb.series.items():
+        assert s["models"] and s["procedures"]["nozzle_check"] and s["procedures"]["head_cleaning"], key
+        assert s.get("lights") or s.get("lcd_codes"), key
+        assert s["sources"], key
+        for m in s["models"]:
+            assert db.get(m) is not None, f"{key}: unknown model {m}"
+    ids = [g["id"] for g in kb.guides]
+    assert len(ids) == len(set(ids))
+    for g in kb.guides:
+        assert g["steps"], g["id"]
+
+
+def test_featured_models_have_their_own_series():
+    from egm import troubleshooting as ts
+    kb = ts.load()
+    unmapped = [m.name for m in load().popular() if not kb.profile(m.name).exact]
+    assert unmapped == ["ET-2710"], unmapped  # only one popular model still on generic help
+
+
+def test_all_ecotank_models_are_featured_popular_first():
+    db = load()
+    names = [m.name for m in db.featured()]
+    assert names[:len(db.popular_names)] == [n for n in db.popular_names if db.get(n)]
+    for n in ("L310", "L3111", "ET-2850", "ET-M1170", "M2140", "L18050", "L110"):
+        assert db.get(n).featured, n
+    assert not db.get("XP-205").featured
+    assert len(names) > 400
+
+
+def test_guides_use_the_models_own_buttons():
+    from egm import troubleshooting as ts
+    kb = ts.load()
+    g = kb.guide("clogged-nozzles")
+    l3111 = ts.guide_text(g, kb.profile("L3111"))
+    l4260 = ts.guide_text(g, kb.profile("L4260"))
+    assert "hold Stop for 5 seconds" in l3111 and "Maintenance > Head Cleaning" in l4260
+    assert "{" not in l3111
+    assert kb.profile("L3252").key == "L3250"          # re-badge alias
+    assert kb.profile("XP-205").key == "generic"
+    assert kb.search("yellow missing")[0]["id"] in ("single-colour-purge", "clogged-nozzles")
+    assert kb.light_matches(kb.profile("L4260"), "E-11")
+
+
+
+def test_charge_and_cleaning_codes_come_from_the_model():
+    l310 = load().get("L310").family
+    l3111 = load().get("L3111").family
+    assert pj.charge_code(l310) == 0x0A and pj.charge_code(l3111) == 0xFF
+    # wrapped in the factory session exactly like Epson's F2_discharge.prn: FB 00 / 81 / 85 00 / 81 ... 81 / 85 01
+    job = pj.ink_charge_job(l310)
+    assert job.startswith(bytes.fromhex("1b7c000600" "8202" "fb04fd00" "1b7c000500" "8202" "817ec0"))
+    assert bytes.fromhex("1b7c000600" "8202" "847b42" "0a") in job
+    assert job.endswith(bytes.fromhex("1b7c000600" "8202" "857ac2" "01"))
+    assert bytes.fromhex("847b42ff") in pj.ink_charge_job(l3111)
+    assert pj.cleaning_levels(l310) == [0, 1, 2]
+    assert bytes.fromhex("847b4202") in pj.service_cleaning_job(l310)   # strongest = 2, not 4
+    with pytest.raises(ValueError):
+        pj.service_cleaning_job(l310, 4)
+
+
+def test_refused_ink_charge_falls_back_to_factory_job():
+    s = PrinterSession.connect("sim:L310", "L310")
+    s.link.printer.refuse_service = True
+    i = next(i for i, o in enumerate(s.cleaning_options()) if o["kind"] == "charging")
+    msg = s.run_cleaning(i, confirm_timeout=1)
+    assert "factory print job (code 0a)" in msg
+    assert s.link.printed[-1] == pj.ink_charge_job(s.family)
+
+
+
+def test_driver_pages_render(tmp_path):
+    """Colour test and purge pages render through Qt's print system (PDF here)."""
+    from egm import driverprint as dp
+    test_pdf = tmp_path / "test.pdf"
+    purge_pdf = tmp_path / "purge.pdf"
+    assert "colour test" in dp.print_color_test(f"pdf:{test_pdf}", "L310")
+    assert "yellow" in dp.print_purge(f"pdf:{purge_pdf}", "Yellow", 3)
+    assert test_pdf.stat().st_size > 1000
+    with pytest.raises(ValueError):
+        dp.print_purge(f"pdf:{purge_pdf}", "Orange", 1)

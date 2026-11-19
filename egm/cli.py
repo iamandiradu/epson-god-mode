@@ -224,16 +224,20 @@ def cmd_print(args) -> int:
     elif args.job == "power-clean":
         job = pj.head_cleaning(power=True)
     elif args.job == "color-test":
-        job = pj.color_test_pattern()
-        if job is None:
-            print("epson-escp2 (with Pillow) is needed for the colour test pattern")
+        from . import driverprint as dp
+        q = args.queue or dp.pick_driver_queue(args.model or "")
+        if not q:
+            print("The colour test page is printed through the Epson driver: pass --queue NAME. Installed queues:",
+                  ", ".join(dp.driver_queues()) or "none")
             return 1
+        print(dp.print_color_test(q, args.model or ""))
+        return 0
     elif args.job in ("service-clean", "ink-charge", "discharge"):
         if fam is None:
             print("--model is required for factory jobs (or connect, so it is detected)")
             return 1
         if args.job == "service-clean":
-            job = pj.service_cleaning_job(fam, args.level or 2)
+            job = pj.service_cleaning_job(fam, args.level)
         elif args.job == "ink-charge":
             job = pj.ink_charge_job(fam)
         else:
@@ -251,6 +255,67 @@ def cmd_print(args) -> int:
     # default: straight to the connected printer (USB pipe / port 9100), no print queue
     with _session(args) as s:
         print(s.print_job(job, "direct"))
+    return 0
+
+
+def cmd_watch(args) -> int:
+    """Live view of what the printer is doing (Ctrl+C to stop)."""
+    import time
+    from .activity import ActivityTracker
+    tracker = ActivityTracker()
+    seen_work = False
+    last_line = ""
+    with _session(args) as s:
+        s.on_status = tracker.observe
+        try:
+            while True:
+                snap = s.poll()
+                line = snap.label + (f" — {snap.detail}" if snap.detail else "")
+                if line != last_line:
+                    print(time.strftime("%H:%M:%S"), line, flush=True)
+                    last_line = line
+                if snap.working:
+                    seen_work = True
+                elif args.until_idle and seen_work and snap.kind == "idle":
+                    return 0
+                time.sleep(args.interval)
+        except KeyboardInterrupt:
+            return 0
+
+
+def cmd_troubleshoot(args) -> int:
+    """Offline help: the model's light patterns / procedures, or guides matching a problem."""
+    from . import troubleshooting as ts
+    kb = ts.load()
+    prof = kb.profile(args.model)
+    query = " ".join(args.problem)
+    if not query:
+        print(ts.profile_text(prof))
+        print("\nGuides:", ", ".join(g["id"] for g in kb.guides))
+        return 0
+    g = kb.guide(query)
+    hits = [g] if g else kb.search(query)
+    lights = kb.light_matches(prof, query)
+    for r in lights:
+        print(f"[{prof.name}] {r['pattern']}: {r['meaning']}" + (f" -> {r['action']}" if r["action"] else ""))
+    if not hits and not lights:
+        print("No matching guide. Try other words, or run without a problem to see your model's lights.")
+        return 1
+    for g in hits[: 1 if args.first else 3]:
+        print()
+        print(ts.guide_text(g, prof))
+    return 0
+
+
+def cmd_purge(args) -> int:
+    """Solid pages of one ink through the printer driver (no waste ink)."""
+    from . import driverprint as dp
+    color = args.color.capitalize()
+    q = args.queue or dp.pick_driver_queue(args.model or "")
+    if not q:
+        print("Pass --queue NAME (an installed printer). Installed queues:", ", ".join(dp.driver_queues()) or "none")
+        return 1
+    print(dp.print_purge(q, color, args.pages))
     return 0
 
 
@@ -302,6 +367,19 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--queue", help="instead of printing directly: a print queue name, ip[:port], /dev/usb/lpN or file:<path>")
     sp.add_argument("--level", type=int); sp.add_argument("--force", action="store_true")
     sp.set_defaults(fn=cmd_print)
+    sp = sub.add_parser("troubleshoot", help="offline help: lights, button combos and fixes for your model (-m MODEL)")
+    sp.add_argument("problem", nargs="*", help="e.g. 'yellow missing', 'two lights flashing', E-11, or a guide id")
+    sp.add_argument("--first", action="store_true", help="show only the best match")
+    sp.set_defaults(fn=cmd_troubleshoot)
+    sp = sub.add_parser("purge", help="print solid pages of one colour through the driver (unclogs one ink, no waste)")
+    sp.add_argument("color", choices=["yellow", "cyan", "magenta", "black"])
+    sp.add_argument("--pages", type=int, default=2)
+    sp.add_argument("--queue", help="installed printer queue (default: the one matching -m MODEL); pdf:<file> to preview")
+    sp.set_defaults(fn=cmd_purge)
+    sp = sub.add_parser("watch", help="live printer activity (printing / cleaning / ready)")
+    sp.add_argument("--interval", type=float, default=2.0)
+    sp.add_argument("--until-idle", action="store_true", help="exit once the printer goes back to ready after working")
+    sp.set_defaults(fn=cmd_watch)
     sub.add_parser("gui", help="start the graphical interface").set_defaults(fn=cmd_gui)
     return p
 

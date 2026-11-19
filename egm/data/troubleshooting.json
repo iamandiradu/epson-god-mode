@@ -1,0 +1,2450 @@
+{
+ "schema": 1,
+ "series": {
+  "L310": {
+   "name": "L310 / L312 (printer, 3 lights)",
+   "models": [
+    "L310",
+    "L312"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "Stop"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy. After an ink fill it flashes for about 20 minutes.",
+     "action": "Do not interrupt it."
+    },
+    {
+     "pattern": "Paper on",
+     "meaning": "No paper or multiple sheets fed.",
+     "action": "Load paper, press Stop."
+    },
+    {
+     "pattern": "Paper flashing",
+     "meaning": "Paper jam.",
+     "action": "Remove it, press Stop."
+    },
+    {
+     "pattern": "Power + Ink on",
+     "meaning": "Initial ink charging may be incomplete.",
+     "action": "Follow the Start Here poster."
+    },
+    {
+     "pattern": "Paper + Ink flashing",
+     "meaning": "Waste ink pads need service.",
+     "action": "Service the pads / fit an external waste tank, then reset the counter."
+    },
+    {
+     "pattern": "Power + Paper + Ink flashing",
+     "meaning": "Paper or packing material inside.",
+     "action": "Open the cover, remove it, switch off and on."
+    },
+    {
+     "pattern": "Paper + Ink on",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch the printer off, load plain paper, hold Stop and press Power; release both when it powers on.",
+    "head_cleaning": "Load plain paper, hold Stop for 3 seconds; the power light flashes during cleaning and stays on when done.",
+    "power_cleaning": "Computer only: Epson driver > Maintenance > Ink Tube Flushing / Power Ink Flushing. Refill the tanks first; switch off and wait 12 hours afterwards."
+   },
+   "notes": [
+    "Older generation: 'Ink Tube Flushing' instead of Power Cleaning.",
+    "Official escalation: up to 3 cleanings, switch off 12 hours, check again, then flush the tubes."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd4/cpd42407/source/printers/source/troubleshooting/reference/l310/problem_light_status_l310.html",
+    "https://files.support.epson.com/docid/cpd4/cpd42407/source/printers/source/ink_functions/tasks/cleaning_head_buttons_spc.html",
+    "https://files.support.epson.com/docid/cpd4/cpd42407/source/printers/source/ink_functions/concepts/ink_tube_flushing.html"
+   ]
+  },
+  "L110": {
+   "name": "L110 / L210 / L300 / L350 / L355 (first generation)",
+   "models": [
+    "L110",
+    "L111",
+    "L210",
+    "L211",
+    "L300",
+    "L301",
+    "L303",
+    "L308",
+    "L350",
+    "L351",
+    "L353",
+    "L355",
+    "L358"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "Stop"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy. After an ink fill it flashes for about 20 minutes.",
+     "action": "Do not interrupt it."
+    },
+    {
+     "pattern": "Power flashing + Paper flashing",
+     "meaning": "Paper jam.",
+     "action": "Remove it, press Stop."
+    },
+    {
+     "pattern": "Power flashing + Paper on",
+     "meaning": "No paper or multiple sheets fed.",
+     "action": "Load paper, press Stop."
+    },
+    {
+     "pattern": "Ink flashing (power on or flashing)",
+     "meaning": "Ink probably low; levels need resetting soon.",
+     "action": "Check the tanks by eye and get ink; printing continues."
+    },
+    {
+     "pattern": "Ink on (power on or flashing)",
+     "meaning": "Ink reached the lower line.",
+     "action": "Refill and reset the ink levels; running below the line can damage the printer."
+    },
+    {
+     "pattern": "Ink + Paper flashing (power on or flashing)",
+     "meaning": "Waste ink pads near end of life.",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "Power + Ink + Paper flashing",
+     "meaning": "Fatal error.",
+     "action": "Switch off and on; check for a jam."
+    },
+    {
+     "pattern": "Ink + Paper on",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch the printer off, load plain paper, hold Stop and press Power; release both when it powers on.",
+    "head_cleaning": "Load plain paper, hold Stop for 3 seconds; the power light flashes during cleaning and stays on when done.",
+    "power_cleaning": "Computer only: Epson driver > Maintenance > Ink Tube Flushing / Power Ink Flushing. Refill the tanks first; switch off and wait 12 hours afterwards."
+   },
+   "notes": [
+    "This generation tracks ink levels by estimate: after refilling, reset the ink level as the driver asks.",
+    "The paper and ink lights share one spot on the panel."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd4/cpd40789/source/troubleshooting/reference/l210_l350/problem_light_status_l110_l355.html",
+    "https://files.support.epson.com/docid/cpd4/cpd40789/source/printers/source/ink_functions/tasks/cleaning_head_buttons_spc.html"
+   ]
+  },
+  "L365": {
+   "name": "L220 / L360 / L365 (all-in-one, 3 lights)",
+   "models": [
+    "L220",
+    "L222",
+    "L360",
+    "L362",
+    "L364",
+    "L365",
+    "L366"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "B&W copy",
+    "Color copy",
+    "Stop",
+    "Wi-Fi (L365/L366)"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy.",
+     "action": "Wait until it stops before switching off."
+    },
+    {
+     "pattern": "Paper flashing",
+     "meaning": "Paper jam.",
+     "action": "Remove it, press a copy button."
+    },
+    {
+     "pattern": "Paper on",
+     "meaning": "No paper or multiple sheets fed.",
+     "action": "Load paper, press a copy button."
+    },
+    {
+     "pattern": "Power + Ink on",
+     "meaning": "Initial ink charging may be incomplete.",
+     "action": "Follow the Start Here poster."
+    },
+    {
+     "pattern": "Ink + Paper flashing",
+     "meaning": "Waste ink pads need service.",
+     "action": "Service the pads / external tank, then reset."
+    },
+    {
+     "pattern": "Ink + Paper on",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry."
+    },
+    {
+     "pattern": "Power + Ink + Paper flashing",
+     "meaning": "Paper or packing material inside.",
+     "action": "Open the scanner unit, remove it, switch off and on."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch the printer off, load plain paper, hold Stop and press Power; release both when it powers on.",
+    "head_cleaning": "Load plain paper, hold Stop for 3 seconds; the power light flashes during cleaning and stays on when done.",
+    "power_cleaning": "Computer only: Epson driver > Maintenance > Ink Tube Flushing / Power Ink Flushing. Refill the tanks first; switch off and wait 12 hours afterwards."
+   },
+   "notes": [
+    "Button procedures as in the L380 guide, which shares this control panel."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd4/cpd42421/source/troubleshooting/reference/l365/problem_light_status_l365.html",
+    "https://files.support.epson.com/docid/cpd5/cpd52154/source/printers/source/ink_functions/tasks/cleaning_head_buttons_spc.html"
+   ]
+  },
+  "L3110": {
+   "name": "L3110 / L3111 series (USB, buttons)",
+   "models": [
+    "L3100",
+    "L3101",
+    "L3110",
+    "L3111",
+    "L3115",
+    "L3116",
+    "L3117",
+    "L3118",
+    "L3119"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "B&W copy",
+    "Color copy",
+    "Stop"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy (printing, cleaning, charging).",
+     "action": "Wait until it stops before switching off."
+    },
+    {
+     "pattern": "Ink on",
+     "meaning": "Initial ink charging may not have finished.",
+     "action": "Follow the Start Here sheet."
+    },
+    {
+     "pattern": "Paper on",
+     "meaning": "No paper, or several sheets fed at once.",
+     "action": "Load paper, then press the B&W or Color copy button."
+    },
+    {
+     "pattern": "Paper flashing",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, then press a copy button."
+    },
+    {
+     "pattern": "Power + Paper flashing together",
+     "meaning": "Main waste ink pad near or at end of life (waste counter).",
+     "action": "Service the pads / fit an external waste tank, then reset the counter. A copy button lets you keep printing for now."
+    },
+    {
+     "pattern": "Power + Paper flashing alternately",
+     "meaning": "Borderless waste ink pad near or at end of life.",
+     "action": "As above; printing with borders still works, borderless stays disabled until reset."
+    },
+    {
+     "pattern": "All lights flashing",
+     "meaning": "Paper or packing material stuck inside, or printer error.",
+     "action": "Open the front cover, remove it, switch off and on. If it persists, read the last fatal error in Counters & errors."
+    },
+    {
+     "pattern": "Power off, Ink + Paper on",
+     "meaning": "Firmware update failed.",
+     "action": "Retry the update (over USB)."
+    },
+    {
+     "pattern": "Power on/flashing, Ink + Paper on",
+     "meaning": "The printer was not switched off properly.",
+     "action": "Press a copy button, run a nozzle check, cancel queued jobs. Always switch off with the power button."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch the printer off, load plain paper, hold Stop and press Power; release both when it powers on.",
+    "head_cleaning": "Load plain paper, hold Stop for 5 seconds; the power light flashes during cleaning and stays on when done.",
+    "power_cleaning": "From the computer only: Epson printer driver > Maintenance > Power Cleaning (Mac: Printer Utility). Every tank at least one-third full; wait 12 hours before repeating."
+   },
+   "notes": [
+    "Waste pad warning = Power + Paper lights flashing (not Ink + Paper like the newer L32xx).",
+    "No Power Cleaning on the panel; run it from the Epson driver."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd5/cpd55457/source/troubleshooting/reference/l3110/problem_light_status_l3110.html",
+    "https://files.support.epson.com/docid/cpd5/cpd55457/source/printers/source/ink_functions/tasks/checking_nozzles_buttons_spc.html",
+    "https://files.support.epson.com/docid/cpd5/cpd55457/source/printers/source/ink_functions/tasks/power_cleaning_utility.html"
+   ]
+  },
+  "L3150": {
+   "name": "L3150 / L3156 series (Wi-Fi, buttons)",
+   "models": [
+    "L3150",
+    "L3151",
+    "L3152",
+    "L3153",
+    "L3156",
+    "L3158"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "Wi-Fi",
+    "Network status",
+    "B&W copy",
+    "Color copy",
+    "Stop"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy (printing, cleaning, charging).",
+     "action": "Wait until it stops before switching off."
+    },
+    {
+     "pattern": "Ink on",
+     "meaning": "Initial ink charging may not have finished.",
+     "action": "Follow the Start Here sheet."
+    },
+    {
+     "pattern": "Paper on",
+     "meaning": "No paper, or several sheets fed at once.",
+     "action": "Load paper, then press the B&W or Color copy button."
+    },
+    {
+     "pattern": "Paper flashing",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, then press a copy button."
+    },
+    {
+     "pattern": "Power + Paper flashing together",
+     "meaning": "Main waste ink pad near or at end of life (waste counter).",
+     "action": "Service the pads / fit an external waste tank, then reset the counter. A copy button lets you keep printing for now."
+    },
+    {
+     "pattern": "Power + Paper flashing alternately",
+     "meaning": "Borderless waste ink pad near or at end of life.",
+     "action": "As above; printing with borders still works, borderless stays disabled until reset."
+    },
+    {
+     "pattern": "All lights flashing",
+     "meaning": "Paper or packing material stuck inside, or printer error.",
+     "action": "Open the front cover, remove it, switch off and on. If it persists, read the last fatal error in Counters & errors."
+    },
+    {
+     "pattern": "Wi-Fi + Wi-Fi Direct flashing",
+     "meaning": "Wi-Fi connection error.",
+     "action": "Press the Wi-Fi button to clear it and try again."
+    },
+    {
+     "pattern": "Ink + Paper + Wi-Fi + Wi-Fi Direct on",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    },
+    {
+     "pattern": "Power on/flashing, Ink + Paper on",
+     "meaning": "The printer was not switched off properly.",
+     "action": "Press a copy button, run a nozzle check, cancel queued jobs. Always switch off with the power button."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch the printer off, load plain paper, hold Stop and press Power; release both when it powers on.",
+    "head_cleaning": "Load plain paper, hold Stop for 5 seconds; the power light flashes during cleaning and stays on when done.",
+    "power_cleaning": "From the computer only: Epson printer driver > Maintenance > Power Cleaning (Mac: Printer Utility). Every tank at least one-third full; wait 12 hours before repeating."
+   },
+   "notes": [
+    "Many units refuse EEPROM access over Wi-Fi; connect by USB for counter resets."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd5/cpd55466/source/troubleshooting/reference/l3150/problem_light_status_l3150.html",
+    "https://files.support.epson.com/docid/cpd5/cpd55466/source/printers/source/ink_functions/tasks/cleaning_head_buttons_spc.html"
+   ]
+  },
+  "L3210": {
+   "name": "L3210 / L3211 / L3215 / L3216 series (USB, buttons)",
+   "models": [
+    "L3200",
+    "L3201",
+    "L3203",
+    "L3205",
+    "L3206",
+    "L3210",
+    "L3211",
+    "L3215",
+    "L3216",
+    "L3217",
+    "L3218",
+    "L3219"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "B&W copy",
+    "Color copy",
+    "Stop"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy.",
+     "action": "Wait until it stops before switching off."
+    },
+    {
+     "pattern": "Ink on",
+     "meaning": "Initial ink charging may not have finished.",
+     "action": "Follow the Start Here sheet."
+    },
+    {
+     "pattern": "Paper on",
+     "meaning": "No paper, or several sheets fed at once.",
+     "action": "Load paper, then press the B&W or Color copy button."
+    },
+    {
+     "pattern": "Paper flashing",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, then press a copy button."
+    },
+    {
+     "pattern": "Ink + Paper flashing together",
+     "meaning": "Main waste ink pad near or at end of life.",
+     "action": "Service the pads / external tank, then reset the counter. A copy button lets you continue for now."
+    },
+    {
+     "pattern": "Ink + Paper flashing alternately",
+     "meaning": "Borderless waste ink pad near or at end of life.",
+     "action": "As above; borderless printing stays disabled until reset."
+    },
+    {
+     "pattern": "All lights flashing",
+     "meaning": "Printer error, often paper or packing material inside.",
+     "action": "Open the front cover, remove it, switch off and on."
+    },
+    {
+     "pattern": "Ink + Paper on (power on/flashing)",
+     "meaning": "Not switched off properly.",
+     "action": "Press a copy button, nozzle check, cancel queued jobs; switch off with the power button."
+    },
+    {
+     "pattern": "Ink + Paper on (power off)",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch the printer off, load plain paper, hold Stop and press Power; release both when it powers on.",
+    "head_cleaning": "Load plain paper, hold Stop for 5 seconds; the power light flashes during cleaning and stays on when done.",
+    "power_cleaning": "From the computer only: Epson printer driver > Maintenance > Power Cleaning (Mac: Printer Utility). Every tank at least one-third full; wait 12 hours before repeating."
+   },
+   "notes": [
+    "Waste pad warning = Ink + Paper lights flashing.",
+    "Recent firmware may lock EEPROM writes; if the reset is refused, try the app's temporary reset (rw)."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd6/cpd60181/source/troubleshooting/reference/l3210/problem_light_status_l3210.html",
+    "https://files.support.epson.com/docid/cpd6/cpd60181/source/printers/source/ink_functions/tasks/cleaning_head_buttons_spc.html",
+    "https://files.support.epson.com/docid/cpd6/cpd60181/source/printers/source/ink_functions/concepts/power_cleaning.html"
+   ]
+  },
+  "L3250": {
+   "name": "L3250 / L3251 / L3252 / L3256 series (Wi-Fi, buttons)",
+   "models": [
+    "L3250",
+    "L3251",
+    "L3252",
+    "L3253",
+    "L3255",
+    "L3256",
+    "L3257",
+    "L3258",
+    "L3259"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "Wi-Fi",
+    "Network status",
+    "B&W copy",
+    "Color copy",
+    "Stop"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy.",
+     "action": "Wait until it stops before switching off."
+    },
+    {
+     "pattern": "Ink on",
+     "meaning": "Initial ink charging may not have finished.",
+     "action": "Follow the Start Here sheet."
+    },
+    {
+     "pattern": "Paper on",
+     "meaning": "No paper, or several sheets fed at once.",
+     "action": "Load paper, then press the B&W or Color copy button."
+    },
+    {
+     "pattern": "Paper flashing",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, then press a copy button."
+    },
+    {
+     "pattern": "Ink + Paper flashing together",
+     "meaning": "Main waste ink pad near or at end of life.",
+     "action": "Service the pads / external tank, then reset the counter. A copy button lets you continue for now."
+    },
+    {
+     "pattern": "Ink + Paper flashing alternately",
+     "meaning": "Borderless waste ink pad near or at end of life.",
+     "action": "As above; borderless printing stays disabled until reset."
+    },
+    {
+     "pattern": "All lights flashing",
+     "meaning": "Printer error, often paper or packing material inside.",
+     "action": "Open the front cover, remove it, switch off and on."
+    },
+    {
+     "pattern": "Ink + Paper on (power on/flashing)",
+     "meaning": "Not switched off properly.",
+     "action": "Press a copy button, nozzle check, cancel queued jobs; switch off with the power button."
+    },
+    {
+     "pattern": "Wi-Fi + Wi-Fi Direct flashing",
+     "meaning": "Wi-Fi connection error.",
+     "action": "Press the Wi-Fi button to clear it and try again."
+    },
+    {
+     "pattern": "Ink + Paper + Wi-Fi + Wi-Fi Direct on",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch the printer off, load plain paper, hold Stop and press Power; release both when it powers on.",
+    "head_cleaning": "Load plain paper, hold Stop for 5 seconds; the power light flashes during cleaning and stays on when done.",
+    "power_cleaning": "From the computer only: Epson printer driver > Maintenance > Power Cleaning (Mac: Printer Utility). Every tank at least one-third full; wait 12 hours before repeating."
+   },
+   "notes": [
+    "EEPROM access over Wi-Fi is blocked on current firmware: use USB.",
+    "The waste reset on this generation needs an extra flag step; the app does it automatically."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd6/cpd60185/source/troubleshooting/reference/l3250/problem_light_status_l3250.html",
+    "https://files.support.epson.com/docid/cpd6/cpd60185/source/product_info/reference/l3250/control_panel_buttons_lights_l3250.html"
+   ]
+  },
+  "L3160": {
+   "name": "L3160 / ET-2720 series (small colour screen)",
+   "models": [
+    "L3160",
+    "L3161",
+    "L3163",
+    "L3165",
+    "L3166",
+    "L3168",
+    "ET-2720",
+    "ET-2721",
+    "ET-2723",
+    "ET-2725",
+    "ET-2726"
+   ],
+   "panel": "lcd",
+   "buttons": [
+    "Power",
+    "Home",
+    "arrows",
+    "OK",
+    "Start",
+    "Stop",
+    "Back"
+   ],
+   "lcd_codes": [
+    {
+     "pattern": "E-01",
+     "meaning": "Printer error.",
+     "action": "Switch off and on. Check for a paper jam. Read the last fatal error in Counters & errors."
+    },
+    {
+     "pattern": "E-02",
+     "meaning": "Scanner error.",
+     "action": "Switch off and on."
+    },
+    {
+     "pattern": "E-11",
+     "meaning": "Main waste ink pad at end of life; printing stops (scanning still works).",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "E-12",
+     "meaning": "Borderless waste ink pad at end of life.",
+     "action": "As above; printing with borders still works."
+    },
+    {
+     "pattern": "W-01",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, press the button shown on the screen; switch off/on if it persists."
+    },
+    {
+     "pattern": "W-11",
+     "meaning": "Main waste ink pad nearing end of life.",
+     "action": "Plan pad service; press OK/Start to keep printing."
+    },
+    {
+     "pattern": "W-14",
+     "meaning": "Borderless waste ink pad nearing end of life.",
+     "action": "As above."
+    },
+    {
+     "pattern": "I-22 / I-23 / I-31",
+     "meaning": "Wireless setup prompts (WPS button, PIN, configure from a computer).",
+     "action": "Follow the screen."
+    },
+    {
+     "pattern": "I-41",
+     "meaning": "Paper Setup Auto Display is off (needed for AirPrint).",
+     "action": "Turn it on in the settings."
+    },
+    {
+     "pattern": "Recovery Mode",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Home > Maintenance > Nozzle Check > OK, then Start.",
+    "head_cleaning": "Home > Maintenance > Head Cleaning > OK, then Start. Never switch off or open the cover during the cycle.",
+    "power_cleaning": "From the Epson driver: Maintenance > Power Cleaning (some models also offer it on the screen). Every tank at least one-third full; wait 12 hours before repeating."
+   },
+   "notes": [
+    "After a head cleaning the printer offers a nozzle check and asks whether to clean again: answer No if most lines are missing and run a Power Cleaning instead."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd6/cpd60271/source/printers/source/ink_functions/tasks/et2720_l3160/cleaning_head_lcd_et2720_l3160.html"
+   ]
+  },
+  "L3260": {
+   "name": "L3260 / ET-2800 series (small colour screen)",
+   "models": [
+    "L3260",
+    "L3261",
+    "L3263",
+    "L3265",
+    "L3266",
+    "L3267",
+    "L3268",
+    "ET-2800",
+    "ET-2801",
+    "ET-2803",
+    "ET-2805"
+   ],
+   "panel": "lcd",
+   "buttons": [
+    "Power",
+    "Home",
+    "arrows",
+    "OK",
+    "Start",
+    "Stop",
+    "Back"
+   ],
+   "lcd_codes": [
+    {
+     "pattern": "E-01",
+     "meaning": "Printer error.",
+     "action": "Switch off and on. Check for a paper jam. Read the last fatal error in Counters & errors."
+    },
+    {
+     "pattern": "E-02",
+     "meaning": "Scanner error.",
+     "action": "Switch off and on."
+    },
+    {
+     "pattern": "E-11",
+     "meaning": "Main waste ink pad at end of life; printing stops (scanning still works).",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "E-12",
+     "meaning": "Borderless waste ink pad at end of life.",
+     "action": "As above; printing with borders still works."
+    },
+    {
+     "pattern": "W-01",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, press the button shown on the screen; switch off/on if it persists."
+    },
+    {
+     "pattern": "W-11",
+     "meaning": "Main waste ink pad nearing end of life.",
+     "action": "Plan pad service; press OK/Start to keep printing."
+    },
+    {
+     "pattern": "W-14",
+     "meaning": "Borderless waste ink pad nearing end of life.",
+     "action": "As above."
+    },
+    {
+     "pattern": "I-22 / I-23 / I-31",
+     "meaning": "Wireless setup prompts (WPS button, PIN, configure from a computer).",
+     "action": "Follow the screen."
+    },
+    {
+     "pattern": "I-41",
+     "meaning": "Paper Setup Auto Display is off (needed for AirPrint).",
+     "action": "Turn it on in the settings."
+    },
+    {
+     "pattern": "Recovery Mode",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Home > Maintenance > Nozzle Check > OK, then Start.",
+    "head_cleaning": "Home > Maintenance > Head Cleaning > OK, then Start. Never switch off or open the cover during the cycle.",
+    "power_cleaning": "Home > Maintenance > Power Cleaning > OK and follow the screen. Every tank at least one-third full."
+   },
+   "notes": [
+    "Power Cleaning is available on the screen (Maintenance menu).",
+    "EEPROM access over the network is blocked on current firmware; use USB."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd6/cpd60271/source/printers/source/ink_functions/tasks/et2800_l3260/power_cleaning_lcd_et2800_l3260.html",
+    "https://files.support.epson.com/docid/cpd6/cpd60271/source/printers/source/ink_functions/tasks/et2720_l3160/cleaning_head_lcd_et2720_l3160.html"
+   ]
+  },
+  "L1210": {
+   "name": "L1110 / L1210 / L1250 printers (no scanner, buttons)",
+   "models": [
+    "L1110",
+    "L1118",
+    "L1119",
+    "L1210",
+    "L1216",
+    "L1218",
+    "L1219",
+    "L1250",
+    "L1256",
+    "L1258",
+    "L1259"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "Stop",
+    "Wi-Fi (L1250)"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy.",
+     "action": "Wait until it stops before switching off."
+    },
+    {
+     "pattern": "Ink on",
+     "meaning": "Initial ink charging may not have finished.",
+     "action": "Follow the Start Here sheet."
+    },
+    {
+     "pattern": "Paper on",
+     "meaning": "No paper, or several sheets fed at once.",
+     "action": "Load paper, press Stop."
+    },
+    {
+     "pattern": "Paper flashing",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper and press Stop. Still flashing: switch off/on; then load A4/Letter in the rear feed and press Stop."
+    },
+    {
+     "pattern": "Ink + Paper flashing together",
+     "meaning": "Main waste ink pad near or at end of life.",
+     "action": "Service the pads / external tank, then reset the counter. Stop lets you continue for now."
+    },
+    {
+     "pattern": "Ink + Paper flashing alternately",
+     "meaning": "Borderless waste ink pad near or at end of life.",
+     "action": "As above."
+    },
+    {
+     "pattern": "All lights flashing",
+     "meaning": "Paper or packing material inside.",
+     "action": "Open the front cover, remove it, switch off and on."
+    },
+    {
+     "pattern": "Power on/flashing, Ink + Paper on",
+     "meaning": "Not switched off properly.",
+     "action": "Press Stop, nozzle check, cancel queued jobs; switch off with the power button."
+    },
+    {
+     "pattern": "Power off, Ink + Paper on",
+     "meaning": "Firmware update failed.",
+     "action": "Retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch the printer off, load plain paper, hold Stop and press Power; release both when it powers on.",
+    "head_cleaning": "Load plain paper, hold Stop for 5 seconds; the power light flashes during cleaning and stays on when done.",
+    "power_cleaning": "From the computer only: Epson printer driver > Maintenance > Power Cleaning (Mac: Printer Utility). Every tank at least one-third full; wait 12 hours before repeating."
+   },
+   "notes": [
+    "The single Stop button clears errors, prints the nozzle check (held at power-on) and cleans (held 5 s)."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd5/cpd59907/source/printers/source/ink_functions/tasks/cleaning_head_buttons_spc.html",
+    "https://files.support.epson.com/docid/cpd5/cpd59907/source/printers/source/ink_functions/concepts/power_cleaning.html",
+    "https://epson.com.jm/faq/SPT_C11CJ70301~faq-0000800-l1210"
+   ]
+  },
+  "L120": {
+   "name": "L120 / L121 (printer, power + error lights)",
+   "models": [
+    "L120",
+    "L121"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "Cancel (stop icon)"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy. After an ink fill it flashes for about 20 minutes.",
+     "action": "Do not interrupt it."
+    },
+    {
+     "pattern": "Power + Error flashing",
+     "meaning": "Paper jam or printer error.",
+     "action": "Remove the paper, press Cancel; if it keeps flashing switch off, check for foreign objects, switch on."
+    },
+    {
+     "pattern": "Power + Error flashing simultaneously (persistent)",
+     "meaning": "Waste ink pad near or at end of life.",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "Power flashing, Error on",
+     "meaning": "No paper or multiple sheets fed.",
+     "action": "Load paper, press Cancel."
+    },
+    {
+     "pattern": "Power on, Error on",
+     "meaning": "Initial ink charging may be incomplete.",
+     "action": "Switch off and follow the Start Here sheet."
+    },
+    {
+     "pattern": "Power off, Error on",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch off, load paper, hold Cancel and press Power; release both when it powers on.",
+    "head_cleaning": "Load paper, hold Cancel for 3 seconds; power light flashes until done.",
+    "power_cleaning": "Computer only: driver > Maintenance > Power Ink Flushing (refill tanks first)."
+   },
+   "notes": [
+    "On these two-light models a jam and a waste pad warning both flash Power + Error; check the waste counter in this app to tell them apart."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd4/cpd40202/source/printers/source/troubleshooting/reference/l120/problem_light_status_l120.html",
+    "https://files.support.epson.com/docid/cpd4/cpd40202/source/printers/source/ink_functions/tasks/cleaning_head_buttons_spc.html"
+   ]
+  },
+  "L380": {
+   "name": "L380 / L382 / L385 / L395 (buttons)",
+   "models": [
+    "L380",
+    "L382",
+    "L385",
+    "L386",
+    "L395",
+    "L396"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "B&W copy",
+    "Color copy",
+    "Stop",
+    "Wi-Fi (L386/L396)"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy.",
+     "action": "Wait until it stops before switching off."
+    },
+    {
+     "pattern": "Paper flashing",
+     "meaning": "Paper jam.",
+     "action": "Remove it, press a copy button."
+    },
+    {
+     "pattern": "Paper on",
+     "meaning": "No paper or multiple sheets fed.",
+     "action": "Load paper, press a copy button."
+    },
+    {
+     "pattern": "Power + Ink on",
+     "meaning": "Initial ink charging may be incomplete.",
+     "action": "Follow the Start Here poster."
+    },
+    {
+     "pattern": "Ink + Paper flashing",
+     "meaning": "Waste ink pads need service.",
+     "action": "Service the pads / external tank, then reset."
+    },
+    {
+     "pattern": "Ink + Paper on",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry."
+    },
+    {
+     "pattern": "All lights flashing",
+     "meaning": "Paper or packing material inside.",
+     "action": "Open the scanner unit, remove it, switch off and on."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch the printer off, load plain paper, hold Stop and press Power; release both when it powers on.",
+    "head_cleaning": "Load plain paper, hold Stop for 3 seconds; the power light flashes during cleaning and stays on when done.",
+    "power_cleaning": "Computer only: driver > Maintenance > Power Ink Flushing (refill tanks first; wait 12 h after)."
+   },
+   "notes": [
+    "Older generation: 'Power Ink Flushing' instead of Power Cleaning."
+   ],
+   "sources": [
+    "https://epson.com.jm/faq/SPT_C11CF43301~faq-0000800-l380",
+    "https://files.support.epson.com/docid/cpd5/cpd52154/source/printers/source/ink_functions/tasks/cleaning_head_buttons_spc.html",
+    "https://files.support.epson.com/docid/cpd5/cpd52154/source/printers/source/ink_functions/concepts/ink_tube_flushing.html"
+   ]
+  },
+  "L4150": {
+   "name": "L4150 / ET-2700 series (Wi-Fi, buttons)",
+   "models": [
+    "L4150",
+    "L4152",
+    "L4154",
+    "L4156",
+    "L4158",
+    "ET-2700",
+    "ET-2701",
+    "ET-2703",
+    "ET-2705"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "Wi-Fi",
+    "Network status",
+    "B&W copy",
+    "Color copy",
+    "Stop"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy.",
+     "action": "Wait until it stops before switching off."
+    },
+    {
+     "pattern": "Power + Ink on",
+     "meaning": "Initial ink charging may be incomplete.",
+     "action": "Follow the Start Here sheet."
+    },
+    {
+     "pattern": "Paper on",
+     "meaning": "No paper or multiple sheets fed.",
+     "action": "Load paper, press a copy button."
+    },
+    {
+     "pattern": "Paper flashing",
+     "meaning": "Paper jam.",
+     "action": "Remove it, press a copy button."
+    },
+    {
+     "pattern": "Power + Paper flashing",
+     "meaning": "Waste ink pad near or at end of life.",
+     "action": "Service the pads / external tank, then reset. A copy button lets you continue for now."
+    },
+    {
+     "pattern": "All lights flashing",
+     "meaning": "Paper or packing material inside.",
+     "action": "Open the scanner unit, remove it, switch off and on."
+    },
+    {
+     "pattern": "Wi-Fi + Wi-Fi Direct flashing",
+     "meaning": "Wi-Fi connection error.",
+     "action": "Press the Wi-Fi button to clear it and try again."
+    },
+    {
+     "pattern": "Ink + Paper + Wi-Fi + Wi-Fi Direct on",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    },
+    {
+     "pattern": "Ink + Paper on",
+     "meaning": "Not switched off properly.",
+     "action": "Press a copy button, nozzle check, cancel queued jobs; switch off with the power button."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch the printer off, load plain paper, hold Stop and press Power; release both when it powers on.",
+    "head_cleaning": "Load plain paper, hold Stop for 5 seconds; the power light flashes during cleaning and stays on when done.",
+    "power_cleaning": "From the computer only: Epson printer driver > Maintenance > Power Cleaning (Mac: Printer Utility). Every tank at least one-third full; wait 12 hours before repeating."
+   },
+   "notes": [],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd5/cpd53991/source/troubleshooting/reference/et2700_2750/problem_light_status_et2700.html",
+    "https://files.support.epson.com/docid/cpd5/cpd54034/helpcontents.html"
+   ]
+  },
+  "L4160": {
+   "name": "L4160 / ET-2750 series (colour screen)",
+   "models": [
+    "L4160",
+    "L4162",
+    "L4164",
+    "L4166",
+    "L4168",
+    "ET-2750",
+    "ET-2751",
+    "ET-2756"
+   ],
+   "panel": "lcd",
+   "buttons": [
+    "Power",
+    "Home",
+    "arrows",
+    "OK",
+    "Start",
+    "Stop",
+    "Back",
+    "Help"
+   ],
+   "lcd_codes": [
+    {
+     "pattern": "E-01",
+     "meaning": "Printer error.",
+     "action": "Switch off and on. Check for a paper jam. Read the last fatal error in Counters & errors."
+    },
+    {
+     "pattern": "E-02",
+     "meaning": "Scanner error.",
+     "action": "Switch off and on."
+    },
+    {
+     "pattern": "E-11",
+     "meaning": "Main waste ink pad at end of life; printing stops (scanning still works).",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "E-12",
+     "meaning": "Borderless waste ink pad at end of life.",
+     "action": "As above; printing with borders still works."
+    },
+    {
+     "pattern": "W-01",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, press the button shown on the screen; switch off/on if it persists."
+    },
+    {
+     "pattern": "W-11",
+     "meaning": "Main waste ink pad nearing end of life.",
+     "action": "Plan pad service; press OK/Start to keep printing."
+    },
+    {
+     "pattern": "W-14",
+     "meaning": "Borderless waste ink pad nearing end of life.",
+     "action": "As above."
+    },
+    {
+     "pattern": "I-22 / I-23 / I-31",
+     "meaning": "Wireless setup prompts (WPS button, PIN, configure from a computer).",
+     "action": "Follow the screen."
+    },
+    {
+     "pattern": "I-41",
+     "meaning": "Paper Setup Auto Display is off (needed for AirPrint).",
+     "action": "Turn it on in the settings."
+    },
+    {
+     "pattern": "Recovery Mode",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Home > Maintenance > Nozzle Check > OK, then Start.",
+    "head_cleaning": "Home > Maintenance > Head Cleaning > OK, then Start. Never switch off or open the cover during the cycle.",
+    "power_cleaning": "From the Epson driver: Maintenance > Power Cleaning (some models also offer it on the screen). Every tank at least one-third full; wait 12 hours before repeating."
+   },
+   "notes": [],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd5/cpd59900/source/printers/source/ink_functions/tasks/et2850_l4260/cleaning_head_lcd_et2850.html"
+   ]
+  },
+  "L4260": {
+   "name": "L4260 / ET-2850 series (colour screen)",
+   "models": [
+    "L4260",
+    "L4261",
+    "L4263",
+    "L4265",
+    "L4266",
+    "L4267",
+    "L4268",
+    "L4269",
+    "ET-2850",
+    "ET-2851",
+    "ET-2853",
+    "ET-2855"
+   ],
+   "panel": "lcd",
+   "buttons": [
+    "Power",
+    "Home",
+    "arrows",
+    "OK",
+    "Start",
+    "Stop",
+    "Back"
+   ],
+   "lcd_codes": [
+    {
+     "pattern": "E-01",
+     "meaning": "Printer error.",
+     "action": "Switch off and on. Check for a paper jam. Read the last fatal error in Counters & errors."
+    },
+    {
+     "pattern": "E-02",
+     "meaning": "Scanner error.",
+     "action": "Switch off and on."
+    },
+    {
+     "pattern": "E-11",
+     "meaning": "Main waste ink pad at end of life; printing stops (scanning still works).",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "E-12",
+     "meaning": "Borderless waste ink pad at end of life.",
+     "action": "As above; printing with borders still works."
+    },
+    {
+     "pattern": "W-01",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, press the button shown on the screen; switch off/on if it persists."
+    },
+    {
+     "pattern": "W-11",
+     "meaning": "Main waste ink pad nearing end of life.",
+     "action": "Plan pad service; press OK/Start to keep printing."
+    },
+    {
+     "pattern": "W-14",
+     "meaning": "Borderless waste ink pad nearing end of life.",
+     "action": "As above."
+    },
+    {
+     "pattern": "I-22 / I-23 / I-31",
+     "meaning": "Wireless setup prompts (WPS button, PIN, configure from a computer).",
+     "action": "Follow the screen."
+    },
+    {
+     "pattern": "I-41",
+     "meaning": "Paper Setup Auto Display is off (needed for AirPrint).",
+     "action": "Turn it on in the settings."
+    },
+    {
+     "pattern": "Recovery Mode",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Home > Maintenance > Nozzle Check > OK, then Start.",
+    "head_cleaning": "Home > Maintenance > Head Cleaning > OK, then Start. Never switch off or open the cover during the cycle.",
+    "power_cleaning": "Home > Maintenance > Power Cleaning > OK and follow the screen. Every tank at least one-third full."
+   },
+   "notes": [
+    "EEPROM access over the network is blocked on current firmware; use USB."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd5/cpd59900/source/troubleshooting/reference/et2850_et2850u_l4260/problem_message_status_et2850.html",
+    "https://files.support.epson.com/docid/cpd5/cpd59900/source/printers/source/ink_functions/concepts/power_cleaning_tanks.html"
+   ]
+  },
+  "L5190": {
+   "name": "L5190 / ET-4700 series (screen, ADF, fax on some)",
+   "models": [
+    "L5190",
+    "L5196",
+    "L5198",
+    "ET-4700"
+   ],
+   "panel": "lcd",
+   "buttons": [
+    "Power",
+    "Home",
+    "arrows",
+    "OK",
+    "Start",
+    "Stop",
+    "Back",
+    "Help"
+   ],
+   "lcd_codes": [
+    {
+     "pattern": "E-01",
+     "meaning": "Printer error.",
+     "action": "Switch off and on. Check for a paper jam. Read the last fatal error in Counters & errors."
+    },
+    {
+     "pattern": "E-02",
+     "meaning": "Scanner error.",
+     "action": "Switch off and on."
+    },
+    {
+     "pattern": "E-11",
+     "meaning": "Main waste ink pad at end of life; printing stops (scanning still works).",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "E-12",
+     "meaning": "Borderless waste ink pad at end of life.",
+     "action": "As above; printing with borders still works."
+    },
+    {
+     "pattern": "W-01",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, press the button shown on the screen; switch off/on if it persists."
+    },
+    {
+     "pattern": "W-11",
+     "meaning": "Main waste ink pad nearing end of life.",
+     "action": "Plan pad service; press OK/Start to keep printing."
+    },
+    {
+     "pattern": "W-14",
+     "meaning": "Borderless waste ink pad nearing end of life.",
+     "action": "As above."
+    },
+    {
+     "pattern": "I-22 / I-23 / I-31",
+     "meaning": "Wireless setup prompts (WPS button, PIN, configure from a computer).",
+     "action": "Follow the screen."
+    },
+    {
+     "pattern": "I-41",
+     "meaning": "Paper Setup Auto Display is off (needed for AirPrint).",
+     "action": "Turn it on in the settings."
+    },
+    {
+     "pattern": "Recovery Mode",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Home > Maintenance > Nozzle Check > OK, then Start.",
+    "head_cleaning": "Home > Maintenance > Head Cleaning > OK, then Start. Never switch off or open the cover during the cycle.",
+    "power_cleaning": "With the printer off, hold Power + Help together until the Power Cleaning screen appears, then follow it. Every tank at least one-third full."
+   },
+   "notes": [
+    "Power Cleaning is started with a Power + Help button combination, not from the menu."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd5/cpd56096/source/troubleshooting/reference/et4700_l5190/problem_message_status_et4700_l5190.html",
+    "https://files.support.epson.com/docid/cpd5/cpd56096/source/printers/source/ink_functions/tasks/et4700_l5190/power_cleaning_lcd_et4700_l5190.html"
+   ]
+  },
+  "L5290": {
+   "name": "L5290 / ET-4800 series (screen, ADF)",
+   "models": [
+    "L5290",
+    "L5296",
+    "L5298",
+    "ET-4800",
+    "ET-4810"
+   ],
+   "panel": "lcd",
+   "buttons": [
+    "Power",
+    "Home",
+    "arrows",
+    "OK",
+    "Start",
+    "Stop",
+    "Back"
+   ],
+   "lcd_codes": [
+    {
+     "pattern": "E-01",
+     "meaning": "Printer error.",
+     "action": "Switch off and on. Check for a paper jam. Read the last fatal error in Counters & errors."
+    },
+    {
+     "pattern": "E-02",
+     "meaning": "Scanner error.",
+     "action": "Switch off and on."
+    },
+    {
+     "pattern": "E-11",
+     "meaning": "Main waste ink pad at end of life; printing stops (scanning still works).",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "E-12",
+     "meaning": "Borderless waste ink pad at end of life.",
+     "action": "As above; printing with borders still works."
+    },
+    {
+     "pattern": "W-01",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, press the button shown on the screen; switch off/on if it persists."
+    },
+    {
+     "pattern": "W-11",
+     "meaning": "Main waste ink pad nearing end of life.",
+     "action": "Plan pad service; press OK/Start to keep printing."
+    },
+    {
+     "pattern": "W-14",
+     "meaning": "Borderless waste ink pad nearing end of life.",
+     "action": "As above."
+    },
+    {
+     "pattern": "I-22 / I-23 / I-31",
+     "meaning": "Wireless setup prompts (WPS button, PIN, configure from a computer).",
+     "action": "Follow the screen."
+    },
+    {
+     "pattern": "I-41",
+     "meaning": "Paper Setup Auto Display is off (needed for AirPrint).",
+     "action": "Turn it on in the settings."
+    },
+    {
+     "pattern": "Recovery Mode",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Home > Maintenance > Nozzle Check > OK, then Start.",
+    "head_cleaning": "Home > Maintenance > Head Cleaning > OK, then Start. Never switch off or open the cover during the cycle.",
+    "power_cleaning": "Home > Maintenance > Power Cleaning > OK and follow the screen. Every tank at least one-third full."
+   },
+   "notes": [
+    "ET-4800 waste reset is verified on hardware by the padzero project."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd6/cpd60263/source/printers/source/ink_functions/tasks/et4800_l5290/power_cleaning_lcd_et4800_l5290.html",
+    "https://files.support.epson.com/docid/cpd6/cpd60263/source/troubleshooting/reference/et4700_l5190/problem_message_status_et4700_l5190.html"
+   ]
+  },
+  "L6190": {
+   "name": "L6190 / ET-4750 series (screen, duplex, ADF, fax)",
+   "models": [
+    "L6190",
+    "L6191",
+    "L6196",
+    "L6198",
+    "ET-4750"
+   ],
+   "panel": "lcd",
+   "buttons": [
+    "Power",
+    "Home",
+    "arrows",
+    "OK",
+    "Start",
+    "Stop",
+    "Back",
+    "Help"
+   ],
+   "lcd_codes": [
+    {
+     "pattern": "E-01",
+     "meaning": "Printer error.",
+     "action": "Switch off and on. Check for a paper jam. Read the last fatal error in Counters & errors."
+    },
+    {
+     "pattern": "E-02",
+     "meaning": "Scanner error.",
+     "action": "Switch off and on."
+    },
+    {
+     "pattern": "E-11",
+     "meaning": "Main waste ink pad at end of life; printing stops (scanning still works).",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "E-12",
+     "meaning": "Borderless waste ink pad at end of life.",
+     "action": "As above; printing with borders still works."
+    },
+    {
+     "pattern": "W-01",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, press the button shown on the screen; switch off/on if it persists."
+    },
+    {
+     "pattern": "W-11",
+     "meaning": "Main waste ink pad nearing end of life.",
+     "action": "Plan pad service; press OK/Start to keep printing."
+    },
+    {
+     "pattern": "W-14",
+     "meaning": "Borderless waste ink pad nearing end of life.",
+     "action": "As above."
+    },
+    {
+     "pattern": "I-22 / I-23 / I-31",
+     "meaning": "Wireless setup prompts (WPS button, PIN, configure from a computer).",
+     "action": "Follow the screen."
+    },
+    {
+     "pattern": "I-41",
+     "meaning": "Paper Setup Auto Display is off (needed for AirPrint).",
+     "action": "Turn it on in the settings."
+    },
+    {
+     "pattern": "Recovery Mode",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Home > Maintenance > Nozzle Check > OK, then Start.",
+    "head_cleaning": "Home > Maintenance > Head Cleaning > OK, then Start. Never switch off or open the cover during the cycle.",
+    "power_cleaning": "From the Epson driver: Maintenance > Power Cleaning (some models also offer it on the screen). Every tank at least one-third full; wait 12 hours before repeating."
+   },
+   "notes": [
+    "The screen reports borderless pad warnings as text messages; the main pad uses the usual E-/W- codes."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd5/cpd56457/source/troubleshooting/reference/et4750/problem_message_status_et4750.html"
+   ]
+  },
+  "ET4850": {
+   "name": "ET-4850 / L6270 series (screen, duplex, ADF, fax)",
+   "models": [
+    "ET-4850",
+    "L6270",
+    "L6276",
+    "L6278"
+   ],
+   "panel": "lcd",
+   "buttons": [
+    "Power",
+    "Home",
+    "arrows",
+    "OK",
+    "Start",
+    "Stop",
+    "Back"
+   ],
+   "lcd_codes": [
+    {
+     "pattern": "E-01",
+     "meaning": "Printer error.",
+     "action": "Switch off and on. Check for a paper jam. Read the last fatal error in Counters & errors."
+    },
+    {
+     "pattern": "E-02",
+     "meaning": "Scanner error.",
+     "action": "Switch off and on."
+    },
+    {
+     "pattern": "E-11",
+     "meaning": "Main waste ink pad at end of life; printing stops (scanning still works).",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "E-12",
+     "meaning": "Borderless waste ink pad at end of life.",
+     "action": "As above; printing with borders still works."
+    },
+    {
+     "pattern": "W-01",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, press the button shown on the screen; switch off/on if it persists."
+    },
+    {
+     "pattern": "W-11",
+     "meaning": "Main waste ink pad nearing end of life.",
+     "action": "Plan pad service; press OK/Start to keep printing."
+    },
+    {
+     "pattern": "W-14",
+     "meaning": "Borderless waste ink pad nearing end of life.",
+     "action": "As above."
+    },
+    {
+     "pattern": "I-22 / I-23 / I-31",
+     "meaning": "Wireless setup prompts (WPS button, PIN, configure from a computer).",
+     "action": "Follow the screen."
+    },
+    {
+     "pattern": "I-41",
+     "meaning": "Paper Setup Auto Display is off (needed for AirPrint).",
+     "action": "Turn it on in the settings."
+    },
+    {
+     "pattern": "Recovery Mode",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Home > Maintenance > Nozzle Check > OK, then Start.",
+    "head_cleaning": "Home > Maintenance > Head Cleaning > OK, then Start. Never switch off or open the cover during the cycle.",
+    "power_cleaning": "Home > Maintenance > Power Cleaning > OK and follow the screen. Every tank at least one-third full."
+   },
+   "notes": [
+    "Network EEPROM access is blocked on recent firmware; use USB."
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd6/cpd60205/source/troubleshooting/reference/et4850/problem_message_status_et4850.html"
+   ]
+  },
+  "L805": {
+   "name": "L805 / L810 (6-colour photo, CD/DVD printing)",
+   "models": [
+    "L805",
+    "L810"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "Wi-Fi",
+    "Network status",
+    "Ink",
+    "Paper/Cancel"
+   ],
+   "lights": [
+    {
+     "pattern": "Power on",
+     "meaning": "The printer is on.",
+     "action": ""
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy.",
+     "action": "Wait until it stops before switching off."
+    },
+    {
+     "pattern": "Paper/Cancel on",
+     "meaning": "No paper or disc, or multiple sheets fed.",
+     "action": "Load paper/disc, press Paper/Cancel."
+    },
+    {
+     "pattern": "Paper/Cancel flashing slowly",
+     "meaning": "Paper jam.",
+     "action": "Remove it, press Paper/Cancel."
+    },
+    {
+     "pattern": "Paper/Cancel flashing quickly",
+     "meaning": "Paper too small to eject.",
+     "action": "Remove it by hand or load a larger size."
+    },
+    {
+     "pattern": "Ink on",
+     "meaning": "Initial ink charging may be incomplete.",
+     "action": "Follow the Start Here poster."
+    },
+    {
+     "pattern": "Paper/Cancel + Ink flashing alternately",
+     "meaning": "Waste ink pads need service.",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "Ink quick + Paper/Cancel slow flashing",
+     "meaning": "Output tray in the wrong position (paper vs disc).",
+     "action": "Set the tray correctly."
+    },
+    {
+     "pattern": "Ink + Paper/Cancel flashing slowly",
+     "meaning": "Printer cover open.",
+     "action": "Close the cover."
+    },
+    {
+     "pattern": "Network status flashing slowly",
+     "meaning": "Network error.",
+     "action": "Hold the network status button, then reconnect."
+    },
+    {
+     "pattern": "All lights flashing quickly",
+     "meaning": "Packing material inside.",
+     "action": "Remove it, switch off and on."
+    },
+    {
+     "pattern": "All lights on",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch off, load paper, hold Paper/Cancel and press Power; release when it powers on.",
+    "head_cleaning": "Load paper (no CD tray inserted), hold the Ink button for 3 seconds.",
+    "power_cleaning": "Computer only: driver > Maintenance > Power Ink Flushing (refill first; wait 12 h)."
+   },
+   "notes": [
+    "Six colours: purging a single colour with a printed page saves a lot of ink on this model."
+   ],
+   "sources": [
+    "https://epson.com.jm/faq/SPT_C11CE86301~faq-0000800-l805",
+    "https://files.support.epson.com/docid/cpd5/cpd50133/source/printers/source/ink_functions/tasks/cleaning_head_buttons_spc.html"
+   ]
+  },
+  "L1800": {
+   "name": "L1800 / L1300 (A3)",
+   "models": [
+    "L1800",
+    "L1300"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "Paper",
+    "Ink",
+    "Cancel"
+   ],
+   "lights": [
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy. After an ink fill it flashes for about 20 minutes.",
+     "action": "Do not interrupt it."
+    },
+    {
+     "pattern": "Paper flashing",
+     "meaning": "Paper jam (L1300: cover may be open).",
+     "action": "Remove it, press Cancel."
+    },
+    {
+     "pattern": "Paper on",
+     "meaning": "No paper or multiple sheets fed.",
+     "action": "Load paper, press Cancel."
+    },
+    {
+     "pattern": "Paper + Ink flashing alternately",
+     "meaning": "Waste ink pads near end of life.",
+     "action": "Service the pads / external tank, then reset. Cancel lets you continue for now."
+    },
+    {
+     "pattern": "Power on, Paper + Ink flashing slowly",
+     "meaning": "Unknown error.",
+     "action": "Switch off/on, check for a jam."
+    },
+    {
+     "pattern": "Ink on 3 s, then Power flashing",
+     "meaning": "Initial ink charging.",
+     "action": "Wait about 20 minutes."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch off, load paper, hold Paper and press Power; release when it powers on.",
+    "head_cleaning": "Load paper, hold the Ink button for 3 seconds.",
+    "power_cleaning": "Computer only: Power Ink Flushing in the driver (refill first; wait 12 h)."
+   },
+   "notes": [],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd4/cpd40326.pdf"
+   ]
+  },
+  "L8050": {
+   "name": "L8050 / L18050 / ET-18100 (photo, maintenance box)",
+   "models": [
+    "L8050",
+    "L8058",
+    "L18050",
+    "L18058",
+    "ET-18100"
+   ],
+   "panel": "buttons",
+   "buttons": [
+    "Power",
+    "Resume/Cancel",
+    "Wi-Fi"
+   ],
+   "lights": [
+    {
+     "pattern": "Paper on",
+     "meaning": "No paper / tray not inserted correctly.",
+     "action": "Load paper or reseat the CD/ID tray, press the button."
+    },
+    {
+     "pattern": "Paper jam light",
+     "meaning": "Jam, or disc/ID card misplaced.",
+     "action": "Clear it, press the button."
+    },
+    {
+     "pattern": "Maintenance box flashing",
+     "meaning": "Maintenance box nearly full.",
+     "action": "Replace the maintenance box (user-replaceable)."
+    },
+    {
+     "pattern": "Maintenance box flashing alternately",
+     "meaning": "Cleaning impossible: box full, missing or end of life.",
+     "action": "Replace or reseat the maintenance box."
+    },
+    {
+     "pattern": "Ink pad lights flashing together",
+     "meaning": "Internal ink pad near or at end of life; cleaning stops.",
+     "action": "Service the pads, then reset the counter."
+    },
+    {
+     "pattern": "Borderless pad lights flashing alternately",
+     "meaning": "Borderless pad near or at end of life.",
+     "action": "As above."
+    },
+    {
+     "pattern": "Power flashing",
+     "meaning": "Not switched off properly; nozzles may have dried.",
+     "action": "Clear it, run a nozzle check."
+    },
+    {
+     "pattern": "Transport lock light",
+     "meaning": "Transportation lock engaged.",
+     "action": "Unlock it, press the button."
+    },
+    {
+     "pattern": "Output tray light",
+     "meaning": "Output tray not extended.",
+     "action": "Slide it out."
+    },
+    {
+     "pattern": "All lights on except power",
+     "meaning": "Recovery mode after a failed firmware update.",
+     "action": "Connect by USB and retry."
+    },
+    {
+     "pattern": "All lights flashing",
+     "meaning": "Printer error.",
+     "action": "Remove any paper inside, switch off and on."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Switch off, load A4 paper, hold the second (resume) button while switching on; release when Power flashes.",
+    "head_cleaning": "Hold the second (resume) button for 5 seconds until Power flashes.",
+    "power_cleaning": "Computer utility (driver > Maintenance > Power Cleaning)."
+   },
+   "notes": [
+    "Most waste ink goes to a user-replaceable maintenance box: replace the box rather than resetting a counter.",
+    "Has a transportation lock: always lock it before moving the printer."
+   ],
+   "sources": [
+    "https://download4.epson.biz/sec_pubs/l8050_series/useg/en/GUID-8C9B57F8-F49E-492C-82B4-BF4E279F278A.htm",
+    "https://download4.epson.biz/sec_pubs/l8050_series/useg/en/GUID-784771D4-3E59-4F80-B94D-002B59E143D2.htm"
+   ]
+  }
+ },
+ "generic": {
+  "buttons": {
+   "name": "Generic Epson ink tank printer with buttons and lights",
+   "lights": [
+    {
+     "pattern": "Power flashing",
+     "meaning": "Busy (printing, cleaning, charging).",
+     "action": "Wait until it stops."
+    },
+    {
+     "pattern": "Paper on / flashing",
+     "meaning": "No paper / paper jam.",
+     "action": "Load or remove paper, then press the copy or Stop button."
+    },
+    {
+     "pattern": "Two lights flashing together or alternately (ink + paper, or power + paper)",
+     "meaning": "Usually a waste ink pad warning (main or borderless).",
+     "action": "Check the waste counters in this app."
+    },
+    {
+     "pattern": "All lights flashing",
+     "meaning": "Printer error / something stuck inside.",
+     "action": "Open the covers, remove it, switch off and on."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Usually: switch off, hold Stop (or Cancel/Paper on older models) and press Power.",
+    "head_cleaning": "Usually: hold Stop (or the Ink button) for 3-5 seconds.",
+    "power_cleaning": "From the Epson driver's Maintenance tab (Power Cleaning or Power Ink Flushing)."
+   },
+   "notes": [
+    "These patterns are the common Epson ones; check your model's user guide to be sure."
+   ]
+  },
+  "lcd": {
+   "name": "Generic Epson ink tank printer with a screen",
+   "lcd_codes": [
+    {
+     "pattern": "E-01",
+     "meaning": "Printer error.",
+     "action": "Switch off and on. Check for a paper jam. Read the last fatal error in Counters & errors."
+    },
+    {
+     "pattern": "E-02",
+     "meaning": "Scanner error.",
+     "action": "Switch off and on."
+    },
+    {
+     "pattern": "E-11",
+     "meaning": "Main waste ink pad at end of life; printing stops (scanning still works).",
+     "action": "Service the pads / external tank, then reset the counter."
+    },
+    {
+     "pattern": "E-12",
+     "meaning": "Borderless waste ink pad at end of life.",
+     "action": "As above; printing with borders still works."
+    },
+    {
+     "pattern": "W-01",
+     "meaning": "Paper jam.",
+     "action": "Remove the paper, press the button shown on the screen; switch off/on if it persists."
+    },
+    {
+     "pattern": "W-11",
+     "meaning": "Main waste ink pad nearing end of life.",
+     "action": "Plan pad service; press OK/Start to keep printing."
+    },
+    {
+     "pattern": "W-14",
+     "meaning": "Borderless waste ink pad nearing end of life.",
+     "action": "As above."
+    },
+    {
+     "pattern": "I-22 / I-23 / I-31",
+     "meaning": "Wireless setup prompts (WPS button, PIN, configure from a computer).",
+     "action": "Follow the screen."
+    },
+    {
+     "pattern": "I-41",
+     "meaning": "Paper Setup Auto Display is off (needed for AirPrint).",
+     "action": "Turn it on in the settings."
+    },
+    {
+     "pattern": "Recovery Mode",
+     "meaning": "Firmware update failed.",
+     "action": "Connect by USB and retry the update."
+    }
+   ],
+   "procedures": {
+    "nozzle_check": "Home > Maintenance > Nozzle Check > OK, then Start.",
+    "head_cleaning": "Home > Maintenance > Head Cleaning > OK, then Start. Never switch off or open the cover during the cycle.",
+    "power_cleaning": "Home > Maintenance > Power Cleaning > OK and follow the screen. Every tank at least one-third full."
+   },
+   "notes": [
+    "Epson uses the same E-/W-/I- code scheme across its ink tank models with screens."
+   ]
+  }
+ },
+ "guides": [
+  {
+   "id": "clogged-nozzles",
+   "title": "Lines missing in the nozzle check",
+   "category": "Print quality",
+   "symptoms": [
+    "gaps in the nozzle check",
+    "one colour missing",
+    "faint or streaky prints",
+    "white lines"
+   ],
+   "steps": [
+    {
+     "title": "Check the basics",
+     "text": "Ink tanks above the lower line, no air gaps in the tubes, plain paper loaded, no error lights."
+    },
+    {
+     "title": "Print a nozzle check",
+     "text": "{nozzle_check} In this app: Maintenance → Nozzle check pattern."
+    },
+    {
+     "title": "Only one colour affected?",
+     "text": "Print 2–3 solid pages of that colour first (see 'Purge a single colour'). It uses only that ink and nothing goes to the waste pads."
+    },
+    {
+     "title": "Clean once",
+     "text": "{head_cleaning} Then print another nozzle check."
+    },
+    {
+     "title": "Up to three cleanings",
+     "text": "If it improves, repeat up to three times in total, checking after each."
+    },
+    {
+     "title": "Rest",
+     "text": "Still gaps after three cleanings: switch off and wait at least 12 hours (or overnight). Soaking the cap meanwhile helps (see 'Soak the capping station')."
+    },
+    {
+     "title": "Power cleaning, once",
+     "text": "Only if most lines are still missing: {power_cleaning}"
+    },
+    {
+     "title": "Stop",
+     "text": "No improvement after a power cleaning and another 12-hour rest: the head may be damaged or a tube may be blocked; contact a service centre."
+    }
+   ],
+   "warnings": [
+    "Every cleaning sends ink to the waste pads; back-to-back cleanings fill them fast.",
+    "Power cleaning needs every tank at least one-third full, or it can damage the printer.",
+    "Never switch off or open the cover during a cleaning."
+   ],
+   "tips": [
+    "A pattern that gets better each time is worth one more try; one that never changes needs rest, not cleaning."
+   ],
+   "actions": [
+    "nozzle",
+    "clean_normal",
+    "purge"
+   ],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd5/cpd55457/source/printers/source/ink_functions/tasks/power_cleaning_utility.html",
+    "https://files.support.epson.com/docid/cpd5/cpd59907/source/printers/source/ink_functions/concepts/power_cleaning.html"
+   ]
+  },
+  {
+   "id": "single-colour-purge",
+   "title": "Purge a single colour (save ink)",
+   "category": "Print quality",
+   "symptoms": [
+    "one colour clogged",
+    "yellow missing",
+    "cyan missing",
+    "magenta missing",
+    "black streaky"
+   ],
+   "steps": [
+    {
+     "title": "Why",
+     "text": "Cleaning always pulls ink from every colour, because one cap covers the whole head. Printing a solid page fires only that colour's nozzles."
+    },
+    {
+     "title": "Make the page",
+     "text": "A page filled with pure colour: yellow RGB 255,255,0 · cyan 0,255,255 · magenta 255,0,255 · black 0,0,0. Paint or Word is enough."
+    },
+    {
+     "title": "Print 2–3 pages",
+     "text": "Through the normal Epson driver, plain paper, standard quality, a few minutes apart."
+    },
+    {
+     "title": "Check",
+     "text": "Print a nozzle check. Better but gappy: repeat once. Unchanged: soak the cap, then try again."
+    }
+   ],
+   "warnings": [],
+   "tips": [
+    "Works best when the colour is thin or broken, not completely missing.",
+    "If a colour is missing entirely right after a refill or tube work, suspect air in the tube instead."
+   ],
+   "actions": [
+    "nozzle"
+   ],
+   "sources": []
+  },
+  {
+   "id": "soak-cap",
+   "title": "Soak the capping station (fluid under the head)",
+   "category": "Print quality",
+   "symptoms": [
+    "stubborn clog",
+    "colour still missing after cleaning",
+    "yellow cyan magenta black clogged",
+    "nozzles not recovering",
+    "printer unused for weeks"
+   ],
+   "steps": [
+    {
+     "title": "Get the head off the cap",
+     "text": "Lift the scanner unit. Start a nozzle check or cleaning; as soon as the head moves left off its parking spot, pull the power cable from the wall. Don't use the power button: it parks the head first."
+    },
+    {
+     "title": "Find the cap and wiper",
+     "text": "On the right, where the head rests: a small rectangular rubber cap and a thin rubber blade next to it. Don't touch the clear encoder strip or the white ribbon cable."
+    },
+    {
+     "title": "Clean the cap rim and wiper",
+     "text": "Lint-free swab or cotton bud lightly dampened with distilled water. Dried ink on the rim stops the cap from sealing."
+    },
+    {
+     "title": "Fill the cap",
+     "text": "Distilled water or printhead cleaning fluid, a few drops, level with the rim, not overflowing."
+    },
+    {
+     "title": "Park the head on the wet cap",
+     "text": "Slide the head gently by hand back to the right until it sits in its parking position. Don't force it."
+    },
+    {
+     "title": "Let it soak",
+     "text": "Leave it unplugged at least 4 hours, ideally overnight. This uses no ink."
+    },
+    {
+     "title": "Plug in and check",
+     "text": "Switch on and print a nozzle check; judge the second or third pattern, not the first. Better but gappy: purge that colour. Unchanged: soak once more before cleaning."
+    }
+   ],
+   "warnings": [
+    "Never touch the nozzle plate under the head.",
+    "No alcohol or household cleaners: they can harden the rubber.",
+    "Don't slide the head sideways while it sits on the wet cap."
+   ],
+   "tips": [
+    "The same procedure works on all Epson ink tank printers whose head parks on the right."
+   ],
+   "actions": [],
+   "sources": []
+  },
+  {
+   "id": "move-head",
+   "title": "Move the print head out of the way",
+   "category": "Maintenance",
+   "symptoms": [
+    "need to reach the cap",
+    "head stuck in parking position",
+    "clean under the head"
+   ],
+   "steps": [
+    {
+     "title": "Why there's no button",
+     "text": "Epson printers only move the head themselves; there is no safe 'move head' command."
+    },
+    {
+     "title": "Unplug mid-movement",
+     "text": "Start a nozzle check or cleaning and pull the power cable as the head moves left. Unplugged, the head slides by hand with light pressure."
+    },
+    {
+     "title": "Put it back",
+     "text": "Slide it to the right until it parks over the cap, or just switch on: the printer homes it."
+    }
+   ],
+   "warnings": [
+    "Only unplug for maintenance; normally always switch off with the power button so the head gets capped."
+   ],
+   "tips": [],
+   "actions": [],
+   "sources": []
+  },
+  {
+   "id": "air-in-tubes",
+   "title": "A colour is completely missing after a refill",
+   "category": "Print quality",
+   "symptoms": [
+    "colour missing after refill",
+    "air bubbles in tube",
+    "ink not reaching head"
+   ],
+   "steps": [
+    {
+     "title": "Look at the tank and tube",
+     "text": "Tank above the lower line? Visible air gaps in that colour's tube?"
+    },
+    {
+     "title": "Refill if low",
+     "text": "A tank below the lower line lets air into the system."
+    },
+    {
+     "title": "One ink charge",
+     "text": "Air in the tube needs an ink charge (or one power cleaning), not repeated normal cleanings. Run it once, then rest and print a nozzle check."
+    }
+   ],
+   "warnings": [
+    "An ink charge uses a lot of ink and fills the waste pads quickly."
+   ],
+   "tips": [],
+   "actions": [
+    "ink_charge"
+   ],
+   "sources": []
+  },
+  {
+   "id": "waste-pads",
+   "title": "Waste ink pad full ('service required')",
+   "category": "Errors",
+   "symptoms": [
+    "two lights flashing",
+    "E-11",
+    "W-11",
+    "service required",
+    "ink pad end of life",
+    "printer stopped printing"
+   ],
+   "steps": [
+    {
+     "title": "Confirm it",
+     "text": "Open Waste ink pads in this app: a counter near or above 100% confirms it."
+    },
+    {
+     "title": "Deal with the ink",
+     "text": "The counter is an estimate, but the pads really do hold the ink. Replace or wash the pads, or fit an external waste ink tank (a tube from the pad outlet to a bottle)."
+    },
+    {
+     "title": "Back up",
+     "text": "EEPROM → Full backup before changing anything."
+    },
+    {
+     "title": "Reset",
+     "text": "Waste ink pads → Reset counters. The app backs up the cells, writes and verifies them."
+    },
+    {
+     "title": "Power-cycle",
+     "text": "Switch the printer off and on to clear the error."
+    }
+   ],
+   "warnings": [
+    "Resetting without servicing the pads can let ink leak out of the printer."
+   ],
+   "tips": [
+    "Models with a user-replaceable maintenance box (e.g. L8050/L18050): replace the box instead."
+   ],
+   "actions": [
+    "waste"
+   ],
+   "sources": []
+  },
+  {
+   "id": "not-switched-off",
+   "title": "Ink and paper lights on together after power-on",
+   "category": "Errors",
+   "symptoms": [
+    "ink and paper lights on",
+    "power cut",
+    "unplugged while on"
+   ],
+   "steps": [
+    {
+     "title": "Clear it",
+     "text": "Press the copy (or Stop) button."
+    },
+    {
+     "title": "Check the head",
+     "text": "Print a nozzle check: the head may not have been capped and could have dried."
+    },
+    {
+     "title": "Prevent it",
+     "text": "Always switch off with the power button and wait for the light to go out before unplugging."
+    }
+   ],
+   "warnings": [],
+   "tips": [],
+   "actions": [],
+   "sources": []
+  },
+  {
+   "id": "paper-jam",
+   "title": "Paper jam",
+   "category": "Errors",
+   "symptoms": [
+    "paper light flashing",
+    "W-01",
+    "paper stuck"
+   ],
+   "steps": [
+    {
+     "title": "Cancel the job",
+     "text": "Cancel printing from the computer or with Stop."
+    },
+    {
+     "title": "Rear feed",
+     "text": "Gently pull jammed paper out of the rear feed slot."
+    },
+    {
+     "title": "Inside",
+     "text": "Open the front cover (or scanner unit) and remove paper and torn pieces. Don't touch the parts Epson marks."
+    },
+    {
+     "title": "Clear the error",
+     "text": "Close the cover and press the copy/Stop button."
+    }
+   ],
+   "warnings": [],
+   "tips": [],
+   "actions": [],
+   "sources": []
+  },
+  {
+   "id": "banding",
+   "title": "White or dark lines across prints",
+   "category": "Print quality",
+   "symptoms": [
+    "banding",
+    "horizontal lines",
+    "streaks"
+   ],
+   "steps": [
+    {
+     "title": "Nozzle check first",
+     "text": "Gaps in the pattern → follow 'Lines missing in the nozzle check'."
+    },
+    {
+     "title": "Paper settings",
+     "text": "Paper type in the driver must match the paper; load it printable side up."
+    },
+    {
+     "title": "Quality",
+     "text": "Turn off high-speed / bidirectional printing; use Standard or High quality."
+    },
+    {
+     "title": "Alignment",
+     "text": "Run Print Head Alignment from the driver's Maintenance tab."
+    },
+    {
+     "title": "Ink",
+     "text": "Refill low tanks."
+    }
+   ],
+   "warnings": [],
+   "tips": [],
+   "actions": [],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd5/cpd55457/source/printers/source/troubleshooting/reference/problem_banding.html"
+   ]
+  },
+  {
+   "id": "ink-charge-noise",
+   "title": "Noise and flashing power light after filling ink",
+   "category": "Maintenance",
+   "symptoms": [
+    "noise after refill",
+    "initial charging",
+    "power light flashing for a long time"
+   ],
+   "steps": [
+    {
+     "title": "It's normal",
+     "text": "Initial ink charging takes about 20 minutes with noise; the power light stops flashing when done."
+    },
+    {
+     "title": "Don't interrupt",
+     "text": "Switching off early can charge the head badly and waste ink later."
+    },
+    {
+     "title": "Stuck?",
+     "text": "No movement or noise for 20 minutes and still not finished: switch off and on and check again."
+    }
+   ],
+   "warnings": [],
+   "tips": [],
+   "actions": [],
+   "sources": [
+    "https://files.support.epson.com/docid/cpd5/cpd55457/source/printers/source/troubleshooting/reference/problem_noise_install_tanks.html"
+   ]
+  },
+  {
+   "id": "prevention",
+   "title": "Keep the head from clogging",
+   "category": "Maintenance",
+   "symptoms": [
+    "printer rarely used",
+    "clogs after holidays"
+   ],
+   "steps": [
+    {
+     "title": "Print something weekly",
+     "text": "A small colour page every week keeps every nozzle wet."
+    },
+    {
+     "title": "Keep tanks topped up",
+     "text": "Never run below the lower line."
+    },
+    {
+     "title": "Switch off properly",
+     "text": "Use the power button so the head gets capped; avoid power strips switched off while on."
+    },
+    {
+     "title": "Before a long break",
+     "text": "Print a nozzle check before leaving, and use the soak method if it comes back clogged."
+    }
+   ],
+   "warnings": [],
+   "tips": [],
+   "actions": [],
+   "sources": []
+  },
+  {
+   "id": "app-stuck-print",
+   "title": "Printer stops mid-print with a high-pitched whine",
+   "category": "This app",
+   "symptoms": [
+    "stalled nozzle check",
+    "whining",
+    "half-printed page"
+   ],
+   "steps": [
+    {
+     "title": "Release it",
+     "text": "Maintenance → Release stuck job sends a form feed that finishes the open page."
+    },
+    {
+     "title": "Or power-cycle",
+     "text": "Switch the printer off and on."
+    },
+    {
+     "title": "Why",
+     "text": "A job that never sends its end-of-page leaves the printer waiting for more data."
+    }
+   ],
+   "warnings": [],
+   "tips": [],
+   "actions": [
+    "release"
+   ],
+   "sources": []
+  },
+  {
+   "id": "app-access-denied",
+   "title": "USB 'access denied' (WinErr 5)",
+   "category": "This app",
+   "symptoms": [
+    "WinErr 5",
+    "ACCESS_DENIED",
+    "device I/O failed"
+   ],
+   "steps": [
+    {
+     "title": "Wait",
+     "text": "Windows or Epson's status monitor is using the port, usually for a print job. The app reconnects by itself."
+    },
+    {
+     "title": "Check the queue",
+     "text": "Cancel stuck jobs in the Windows print queue."
+    },
+    {
+     "title": "Power",
+     "text": "Make sure the printer is on and not asleep."
+    }
+   ],
+   "warnings": [],
+   "tips": [],
+   "actions": [],
+   "sources": []
+  },
+  {
+   "id": "app-cleaning-refused",
+   "title": "Cleaning refused (||:84:NA;)",
+   "category": "This app",
+   "symptoms": [
+    "cleaning refused",
+    "84:NA",
+    "cleaning disabled"
+   ],
+   "steps": [
+    {
+     "title": "Read the reason",
+     "text": "The app checks the printer status first and names the blocker: error, not idle, cleaning disabled for a colour, ink low."
+    },
+    {
+     "title": "Fallback",
+     "text": "When nothing blocks it, the app sends the Epson-driver cleaning directly instead and confirms it by the waste counter rising."
+    },
+    {
+     "title": "Rate limits",
+     "text": "Some firmwares refuse strong/power cleaning shortly after another one; wait a while."
+    }
+   ],
+   "warnings": [],
+   "tips": [],
+   "actions": [],
+   "sources": []
+  },
+  {
+   "id": "app-eeprom-refused",
+   "title": "Counter reset refused by the printer (:NA;)",
+   "category": "This app",
+   "symptoms": [
+    "EEPROM refused",
+    "write refused",
+    "NA"
+   ],
+   "steps": [
+    {
+     "title": "Use USB",
+     "text": "Many recent firmwares block EEPROM access over the network."
+    },
+    {
+     "title": "Check the model",
+     "text": "A wrong model selection uses the wrong key; let the app auto-detect."
+    },
+    {
+     "title": "Temporary reset",
+     "text": "Waste ink pads → Temporary reset (rw) works on some locked firmwares; the effect may not be permanent."
+    }
+   ],
+   "warnings": [],
+   "tips": [],
+   "actions": [],
+   "sources": []
+  }
+ ],
+ "disclaimer": "Light patterns and procedures are paraphrased from Epson's user guides for each series (see sources). This project is not affiliated with Seiko Epson Corporation."
+}

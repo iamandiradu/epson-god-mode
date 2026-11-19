@@ -42,8 +42,12 @@ FEATURED = [
     "ET-2700", "ET-2710", "ET-2720", "ET-2750",
     "L3210", "L3211", "L3215", "L3216", "L3252", "L3256", "L1250", "L4260",
     "L5290", "L6190", "L805", "L1800", "L8050", "L18050", "L120", "L121",
-    "L380", "L382", "ET-2800", "ET-2850", "ET-4800", "ET-4850",
+    "L380", "L382", "ET-2800", "ET-2850", "ET-4800", "ET-4850", "L310",
 ]
+
+# Every EcoTank / ink tank model is featured (after the popular list above):
+# L-series, ET-series, ET-M and M mono models.
+ECOTANK_RE = r"(L\d{3,5}|ET-\d{3,5}|ET-M\d{3,5}|M\d{4})"
 
 # Models whose EEPROM map was verified on real hardware by the community
 # (epson_print_conf README / padzero COVERAGE.md) or by us.
@@ -297,6 +301,12 @@ def main() -> None:
     for name, m in models.items():
         m["in_epson_print_conf"] = name in epc_known
 
+    ecotank = sorted((n for n in models if re.fullmatch(ECOTANK_RE, n)),
+                     key=lambda n: (re.sub(r"\d.*", "", n), int(re.sub(r"\D", "", n) or 0), n))
+    featured_all = FEATURED + [n for n in ecotank if n not in FEATURED]
+    for n, m in models.items():
+        m["ecotank"] = n in ecotank
+        m["featured"] = n in featured_all
     missing_featured = [f for f in FEATURED if f not in models]
     if missing_featured:
         print("featured models not in database:", missing_featured, file=sys.stderr)
@@ -309,7 +319,8 @@ def main() -> None:
             "reinkpy": "atufi/reinkpy (AGPL-3.0-or-later)",
             "epson_print_conf": "Ircama/epson_print_conf (EUPL-1.2)",
         },
-        "featured": FEATURED,
+        "popular": FEATURED,
+        "featured": featured_all,
         "families": families,
         "models": dict(sorted(models.items())),
     }
