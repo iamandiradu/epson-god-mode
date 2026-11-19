@@ -38,7 +38,19 @@ echo "Smoke test:"
 STAGE="$(mktemp -d)"
 cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applications"
-hdiutil create -volname "Epson God Mode" -srcfolder "$STAGE" -ov -format UDZO "$DMG" >/dev/null
+# hdiutil fails now and then with "Resource busy" (a known problem on GitHub's
+# macOS runners, where background scanners hold the new files): retry a few times.
+for attempt in 1 2 3 4 5; do
+  if hdiutil create -volname "Epson God Mode" -srcfolder "$STAGE" -ov -format UDZO "$DMG" >/dev/null; then
+    break
+  fi
+  if [ "$attempt" = 5 ]; then
+    echo "hdiutil failed 5 times" >&2
+    exit 1
+  fi
+  echo "hdiutil failed (attempt $attempt), retrying in $((attempt * 5))s..."
+  sleep $((attempt * 5))
+done
 rm -rf "$STAGE"
 [ -n "$IDENTITY" ] && codesign --force --timestamp --sign "$IDENTITY" "$DMG"
 
