@@ -11,7 +11,7 @@ Open-source **waste ink pad resetter, maintenance and adjustment tool** for Epso
 ## Contents
 
 * [What it does](#what-it-does)
-* [Quick start](#quick-start)
+* [How to install](#how-to-install)
 * [A tour of the app](#a-tour-of-the-app)
 * [Supported printers](#supported-printers)
 * [Safety](#safety)
@@ -39,30 +39,79 @@ Open-source **waste ink pad resetter, maintenance and adjustment tool** for Epso
 | **EEPROM** | Range dump, known-cell or full backups, restore, single-cell read/write, and an **EEPROM diff** tool to find where a setting is stored |
 | **Model database** | 1,537 model names in 395 families, each with a coverage level |
 
-## Quick start
+## How to install
 
-### Windows
+You don't need Python or any programming tools for the ready-made apps. Pick your system below.
 
-* **Ready-made app (no Python):** download `EpsonGodMode-windows.zip` from the [Releases page](https://github.com/iamandiradu/epson-god-mode/releases/latest), unzip it and double-click `EpsonGodMode.exe`. USB works through the normal Epson driver; no Zadig or WinUSB needed.
-* **From source:** install Python 3.10+ from python.org, then double-click `run_windows.bat`. It creates a local environment and opens the app.
+**Before you start**
 
-### macOS
+* Connect the printer with a **USB cable** and switch it on. Resets and most maintenance only work over USB.
+* Install the **Epson driver** for your printer (from Epson's support site), if you haven't already. The app uses it for the colour test page and colour purge, and on Windows it also provides the USB connection.
+* Close Epson's own utilities (Epson Printer Utility, Status Monitor) while you use the app, so they don't hold the USB port.
 
-* **Ready-made app:** download `EpsonGodMode-macos-arm64.dmg` (Apple Silicon) or `EpsonGodMode-macos-x86_64.dmg` (Intel) from the [Releases page](https://github.com/iamandiradu/epson-god-mode/releases/latest), open it and drag **Epson God Mode** to Applications. If macOS says it cannot check the developer, right-click the app and choose **Open** (or see `docs/SIGNING.md` for signed builds).
-* **From source:** double-click `run_macos.command`. libusb comes with `libusb-package`; if no printer is found, run `brew install libusb` and try again.
+### Windows 10 / 11
+
+1. Open the [latest release](https://github.com/iamandiradu/epson-god-mode/releases/latest) and download **`EpsonGodMode-windows.zip`**.
+2. Right-click the zip and choose **Extract All…**, then pick a folder, for example `Documents\EpsonGodMode`.
+3. Double-click **`EpsonGodMode.exe`**. There is nothing to install.
+4. If Windows shows *"Windows protected your PC"*, click **More info → Run anyway**. This appears because the build isn't code-signed yet.
+
+The folder also contains `egm.exe`, the [command-line](#command-line) version.
+
+### macOS 14 (Sonoma) or newer
+
+1. Find out which Mac you have: Apple menu → **About This Mac**. **Chip: Apple M1/M2/M3/M4…** means Apple Silicon; **Processor: Intel** means Intel.
+2. From the [latest release](https://github.com/iamandiradu/epson-god-mode/releases/latest), download **`EpsonGodMode-macos-arm64.dmg`** (Apple Silicon) or **`EpsonGodMode-macos-x86_64.dmg`** (Intel).
+3. Open the `.dmg` and drag **Epson God Mode** onto the **Applications** folder.
+4. Open the app from Applications. If macOS says it can't verify the developer:
+   * **macOS 15 (Sequoia) or newer:** click **Done**, open **System Settings → Privacy & Security**, scroll down and click **Open Anyway** next to *Epson God Mode*, then confirm.
+   * **macOS 14 (Sonoma):** right-click (or Control-click) the app, choose **Open**, then **Open** again.
+   * Or, in Terminal: `xattr -dr com.apple.quarantine "/Applications/Epson God Mode.app"`
+
+You only need to do step 4 the first time. Signed and notarized builds (see `docs/SIGNING.md`) open without it.
 
 ### Linux
 
+There is no ready-made Linux build; install from source (Python 3.10+ and libusb):
+
 ```bash
+sudo apt install python3-venv libusb-1.0-0       # Debian/Ubuntu; use your distribution's equivalent
+git clone https://github.com/iamandiradu/epson-god-mode.git
+cd epson-god-mode
+python3 -m venv .venv && . .venv/bin/activate
 pip install -e ".[patterns]"
 egm gui
 ```
 
-Raw USB access may need a udev rule or `sudo`.
+If the printer is found but access is denied, allow your user to open Epson USB devices, then unplug and replug the printer:
 
-### No printer at hand?
+```bash
+echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="04b8", TAG+="uaccess"' | sudo tee /etc/udev/rules.d/60-epson-god-mode.rules
+sudo udevadm control --reload-rules
+```
 
-Type `sim:L3111` (or any model) as the device, or run `egm -d sim:L3111 info`. Everything works against the simulator, including resets and backups.
+(Or run it once with `sudo` to check that this is the problem.)
+
+### From source on Windows or macOS
+
+For the latest code, or if you want to change it:
+
+1. Install **Python 3.10 or newer** from [python.org](https://www.python.org/downloads/). On Windows, tick **Add python.exe to PATH** in the installer.
+2. Download the code: **Code → Download ZIP** on the GitHub page and unzip it, or `git clone https://github.com/iamandiradu/epson-god-mode.git`.
+3. Double-click **`run_windows.bat`** (Windows) or **`run_macos.command`** (macOS). The first start takes a minute while it sets up a private Python environment in a `.venv` folder; later starts are quick.
+4. On macOS, if no printer is found, install libusb with [Homebrew](https://brew.sh): `brew install libusb`, then try again.
+
+### Check that it works
+
+* **With your printer:** open the app, press **Connect** on the Printer page, and the Status page should show your model and ink levels.
+* **Without a printer:** type `sim:L3111` (or any model, e.g. `sim:L310`) in the **Device** box and press **Connect**, or run `egm -d sim:L3111 info`. This starts a built-in simulated printer; everything works against it, including resets and backups.
+
+Then follow the **[tutorial](docs/TUTORIAL.md)**.
+
+### Update or uninstall
+
+* **Update:** download the new release and replace the old `EpsonGodMode.exe` or app. From source: `git pull` (or download the ZIP again) and run the start script.
+* **Uninstall:** delete the folder with `EpsonGodMode.exe` (Windows) or drag **Epson God Mode** from Applications to the Trash (macOS). Nothing else is installed. EEPROM backups stay in the backup folder listed under [Safety](#safety); delete it too if you don't need them.
 
 ## A tour of the app
 
