@@ -1,5 +1,7 @@
 name: build
 # Builds Windows (single-file .exe) and macOS (arm64 + x86_64 .dmg) on every push.
+# Pushing a version tag (git tag v0.2.0 && git push origin v0.2.0) also publishes a
+# GitHub Release with the Windows zip and both .dmg files, downloadable without a GitHub account.
 # Signing is optional and switches on when the matching secrets exist:
 #   macOS : MACOS_CERT_P12_BASE64, MACOS_CERT_PASSWORD, MACOS_SIGN_IDENTITY,
 #           APPLE_ID, APPLE_TEAM_ID, APPLE_APP_PASSWORD           (Apple Developer Program)
@@ -90,3 +92,36 @@ jobs:
         with:
           name: EpsonGodMode-${{ matrix.os == 'macos-15' && 'macos-arm64' || 'macos-x86_64' }}
           path: dist/*.dmg
+
+  release:
+    # only for version tags, after every build succeeded
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, macos]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: artifacts }
+      - name: Collect release files
+        run: |
+          mkdir release
+          # prefer the signed Windows build when SignPath is set up
+          if ls artifacts/EpsonGodMode-windows-signed/*.zip >/dev/null 2>&1; then
+            cp artifacts/EpsonGodMode-windows-signed/*.zip release/
+          else
+            cp artifacts/EpsonGodMode-windows/*.zip release/
+          fi
+          cp artifacts/EpsonGodMode-macos-*/*.dmg release/
+          ls -l release
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+          body: |
+            **Windows:** download `EpsonGodMode-windows.zip`, unzip it and run `EpsonGodMode.exe` (no installation, no Python).
+
+            **macOS:** `EpsonGodMode-macos-arm64.dmg` for Apple Silicon (M1 and newer), `EpsonGodMode-macos-x86_64.dmg` for Intel Macs.
+
+            New to the app? Read the [tutorial](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/TUTORIAL.md).
+            Resetting the waste ink counter does not empty the pads: service the pads before resetting.

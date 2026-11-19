@@ -43,12 +43,12 @@ Open-source **waste ink pad resetter, maintenance and adjustment tool** for Epso
 
 ### Windows
 
-* **Ready-made app (no Python):** download `EpsonGodMode.exe` from the build artifacts of the latest [Actions](https://github.com/iamandiradu/epson-god-mode/actions) run (or from Releases, once published) and double-click it. USB works through the normal Epson driver; no Zadig or WinUSB needed.
+* **Ready-made app (no Python):** download `EpsonGodMode-windows.zip` from the [Releases page](https://github.com/iamandiradu/epson-god-mode/releases/latest), unzip it and double-click `EpsonGodMode.exe`. USB works through the normal Epson driver; no Zadig or WinUSB needed.
 * **From source:** install Python 3.10+ from python.org, then double-click `run_windows.bat`. It creates a local environment and opens the app.
 
 ### macOS
 
-* **Ready-made app:** open `EpsonGodMode-macos-<arch>.dmg` and drag **Epson God Mode** to Applications. If macOS says it cannot check the developer, right-click the app and choose **Open** (or see `docs/SIGNING.md` for signed builds).
+* **Ready-made app:** download `EpsonGodMode-macos-arm64.dmg` (Apple Silicon) or `EpsonGodMode-macos-x86_64.dmg` (Intel) from the [Releases page](https://github.com/iamandiradu/epson-god-mode/releases/latest), open it and drag **Epson God Mode** to Applications. If macOS says it cannot check the developer, right-click the app and choose **Open** (or see `docs/SIGNING.md` for signed builds).
 * **From source:** double-click `run_macos.command`. libusb comes with `libusb-package`; if no printer is found, run `brew install libusb` and try again.
 
 ### Linux
@@ -180,7 +180,8 @@ Conventions:
 
 * **Windows:** double-click `build_exe.bat`. You get `dist\EpsonGodMode.exe` (single file, runs without Python) and `dist\egm.exe` (command line). Building needs Python once; running the result does not.
 * **macOS:** double-click `build_mac.command` on a Mac. You get `dist/Epson God Mode.app` and `dist/EpsonGodMode-macos-<arch>.dmg`.
-* **CI:** `.github/workflows/build.yml` builds Windows, macOS arm64 and macOS Intel on every push to `main` and on `v*` tags.
+* **CI:** `.github/workflows/build.yml` tests and builds Windows, macOS arm64 and macOS Intel on every push to `main` and on pull requests; the builds are kept as workflow artifacts.
+* **Releases:** push a version tag (`git tag v0.2.0` then `git push origin v0.2.0`) and the same workflow publishes a GitHub Release with the Windows zip and both `.dmg` files. Bump `version` in `pyproject.toml` first.
 * **Code signing** (Windows and macOS): see `docs/SIGNING.md`.
 
 ## Adding or fixing a model

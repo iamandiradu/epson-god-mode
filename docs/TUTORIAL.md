@@ -49,13 +49,13 @@ The app never changes anything on the printer without asking you first, and it s
 
 ## 3. Install and open the app
 
-**Windows (easiest):** download `EpsonGodMode.exe` and double-click it. No installation and no Python needed. If Windows SmartScreen warns about an unknown publisher, click **More info → Run anyway** (the app is open source; signed builds remove this warning).
+**Windows (easiest):** download `EpsonGodMode-windows.zip` from the [Releases page](https://github.com/iamandiradu/epson-god-mode/releases/latest), unzip it and double-click `EpsonGodMode.exe`. No installation and no Python needed. If Windows SmartScreen warns about an unknown publisher, click **More info → Run anyway** (the app is open source; signed builds remove this warning).
 
-**macOS:** open `EpsonGodMode-macos-<arch>.dmg` and drag **Epson God Mode** to Applications. The first time, right-click the app and choose **Open** if macOS says it cannot check the developer.
+**macOS:** from the same page, download `EpsonGodMode-macos-arm64.dmg` (Macs with Apple M1 or newer) or `EpsonGodMode-macos-x86_64.dmg` (older Intel Macs). Open it and drag **Epson God Mode** to Applications. The first time, right-click the app and choose **Open** if macOS says it cannot check the developer.
 
 **From the source code** (any system, needs Python 3.10+): double-click `run_windows.bat` (Windows) or `run_macos.command` (macOS). The first start takes a minute while it installs what it needs.
 
-Where to get the files: the build artifacts of the latest **Actions** run on the project's GitHub page (or the **Releases** section, once a release is published). You can also build them yourself, see [Building standalone apps](../README.md#building-standalone-apps).
+You can also build the apps yourself, see [Building standalone apps](../README.md#building-standalone-apps).
 
 ## 4. Connect to your printer
 
